@@ -1,0 +1,162 @@
+NOTE : Using LSA mode.
+]> Creating Groups
+========> i am rank 0 my color group : 0    my pid is 2393 
+========> i am rank 1 my color group : 0    my pid is 2394 
+========> i am rank 4 my color group : 0    my pid is 2397 
+========> i am rank 6 my color group : 0    my pid is 2399 
+========> i am rank 13 my color group : 2    my pid is 2406 
+========> i am rank 18 my color group : 2    my pid is 2411 
+========> i am rank 8 my color group : 0    my pid is 2401 
+========> i am rank 9 my color group : 0    my pid is 2402 
+========> i am rank 10 my color group : 1    my pid is 2403 
+========> i am rank 11 my color group : 2    my pid is 2404 
+========> i am rank 15 my color group : 2    my pid is 2408 
+========> i am rank 17 my color group : 2    my pid is 2410 
+========> i am rank 19 my color group : 2    my pid is 2412 
+========> i am rank 21 my color group : 3    my pid is 2414 
+========> i am rank 2 my color group : 0    my pid is 2395 
+========> i am rank 3 my color group : 0    my pid is 2396 
+========> i am rank 5 my color group : 0    my pid is 2398 
+========> i am rank 7 my color group : 0    my pid is 2400 
+========> i am rank 12 my color group : 2    my pid is 2405 
+========> i am rank 14 my color group : 2    my pid is 2407 
+========> i am rank 16 my color group : 2    my pid is 2409 
+========> i am rank 20 my color group : 2    my pid is 2413 
+]> Creating intercommunicators
+-One Way :
+	 *> 0 -> 21 	 *> 1 -> 21 	 *> 2 -> 21 	 *> 3 -> 21 	 *> 4 -> 21 	 *> 5 -> 21 	 *> 6 -> 21 	 *> 8 -> 21 	 *> 9 -> 21 	 *> 10 -> 11 	 *> 12 -> 10 	 *> 13 -> 10 	 *> 14 -> 10 	 *> 15 -> 10 	 *> 16 -> 10 	 *> 17 -> 10 	 *> 18 -> 10 	 *> 19 -> 10 	 *> 20 -> 10 	 *> 21 -> 0 	 *> 7 -> 21 	 *> 11 -> 10 
+]> The Other : 
+	 *> 0 -> 1 	 *> 0 -> 1 	 *> 0 -> 1 	 *> 0 -> 1 	 *> 0 -> 1 	 *> 0 -> 1 	 *> 0 -> 1 	 *> 0 -> 1 	 *> 1 -> 0 	 *> 2 -> 3 	 *> 2 -> 3 	 *> 2 -> 3 	 *> 2 -> 3 	 *> 2 -> 3 	 *> 2 -> 3 	 *> 2 -> 3 	 *> 3 -> 2 	 *> 0 -> 1 	 *> 0 -> 1 	 *> 2 -> 3 	 *> 2 -> 3 	 *> 2 -> 3 
+GMRES 1: my intercomm with LS -2080374780 
+GMRES 1: my intercomm with LS -2080374780 
+GMRES 1: my intercomm with LS -2080374780 
+GMRES 1: my intercomm with LS -2080374780 
+GMRES 1: my intercomm with LS -2080374780 
+GMRES 1: my intercomm with LS -2080374780 
+GMRES 1: my intercomm with LS -2080374780 
+GMRES 1: my intercomm with LS -2080374777 
+]> In and Out communicators : 
+GMRES 1: my intercomm with LS -2080374780 
+GMRES 1: my intercomm with LS -2080374780 
+GMRES :   0: 21 (1) -> 0 (10) -> 10 (1)   in_com: -2080374777,  out_com: -1006632960
+]> MPI communications ready to be used
+!!!!!!!!!!> i am rank 0 my group : -2080374780
+GMRES :   1: 21 (1) -> 0 (10) -> 10 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 1 my group : -2080374782
+GMRES :   2: 21 (1) -> 0 (10) -> 10 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 2 my group : -2080374782
+GMRES :   4: 21 (1) -> 0 (10) -> 10 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 4 my group : -2080374782
+GMRES :   6: 21 (1) -> 0 (10) -> 10 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 6 my group : -2080374782
+GMRES :   8: 21 (1) -> 0 (10) -> 10 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 8 my group : -2080374782
+GMRES :   9: 21 (1) -> 0 (10) -> 10 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 9 my group : -2080374782
+MAIN :    10: 0 (10) -> 1 (1) -> 11 (10)   in_com: -2080374780,  out_com: -2080374781
+!!!!!!!!!!> i am rank 10 my group : -2080374782
+ARNOLDI : 12: 10 (1) -> 2 (10) -> 21 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 12 my group : -2080374782
+ARNOLDI : 14: 10 (1) -> 2 (10) -> 21 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 14 my group : -2080374782
+ARNOLDI : 15: 10 (1) -> 2 (10) -> 21 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 15 my group : -2080374782
+ARNOLDI : 16: 10 (1) -> 2 (10) -> 21 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 16 my group : -2080374782
+ARNOLDI : 18: 10 (1) -> 2 (10) -> 21 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 18 my group : -2080374782
+ARNOLDI : 11: 10 (1) -> 2 (10) -> 21 (1)   in_com: -2080374779,  out_com: -2080374778
+!!!!!!!!!!> i am rank 11 my group : -2080374782
+ARNOLDI : 13: 10 (1) -> 2 (10) -> 21 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 13 my group : -2080374782
+ARNOLDI : 17: 10 (1) -> 2 (10) -> 21 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 17 my group : -2080374782
+ARNOLDI : 19: 10 (1) -> 2 (10) -> 21 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 19 my group : -2080374782
+ARNOLDI : 20: 10 (1) -> 2 (10) -> 21 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 20 my group : -2080374782
+LS :      21: 11 (10) -> 3 (1) -> 0 (10)   in_com: -2080374780,  out_com: -2080374781
+!!!!!!!!!!> i am rank 21 my group : -2080374782
+GMRES :   5: 21 (1) -> 0 (10) -> 10 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 5 my group : -2080374782
+GMRES :   3: 21 (1) -> 0 (10) -> 10 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 3 my group : -2080374782
+GMRES :   7: 21 (1) -> 0 (10) -> 10 (1)   in_com: -2080374780,  out_com: -2080374779
+!!!!!!!!!!> i am rank 7 my group : -2080374782
+]> Initializing PETSc/SLEPc
+]> Checking temporary directory structure
+]> Creating directory : /home/xinzhewu/workstations/glcs/GMRES_LS_ARNOLDI/matrices_tmp
+]> Creating the directory structure for each group...
+]> Creating directory : /home/xinzhewu/workstations/glcs/GMRES_LS_ARNOLDI/matrices_tmp/gmres
+]> Creating directory : /home/xinzhewu/workstations/glcs/GMRES_LS_ARNOLDI/matrices_tmp/father
+]> Creating directory : /home/xinzhewu/workstations/glcs/GMRES_LS_ARNOLDI/matrices_tmp/arnoldi
+]> Creating directory : /home/xinzhewu/workstations/glcs/GMRES_LS_ARNOLDI/matrices_tmp/ls
+]> Opening input data files
+Loading Matrix : ./data/matrix_generator_add_block_nb_1_1700x1700_21313_nnz
+Loading Matrix : ./data/matrix_generator_add_block_nb_1_1700x1700_21313_nnz
+Loading Matrix : ./data/matrix_generator_add_block_nb_1_1700x1700_21313_nnz
+Loading Matrix : ./data/matrix_generator_add_block_nb_1_1700x1700_21313_nnz
+[21]PETSC ERROR: --------------------- Error Message --------------------------------------------------------------
+[21]PETSC ERROR: Read from file failed
+[21]PETSC ERROR: Read past end of file
+[21]PETSC ERROR: See http://www.mcs.anl.gov/petsc/documentation/faq.html for trouble shooting.
+[21]PETSC ERROR: Petsc Release Version 3.6.4, Apr, 12, 2016 
+[21]PETSC ERROR: ./hyperh on a linux-c-no-debug-complex named romeo1 by xinzhewu Wed Mar 22 16:15:35 2017
+[21]PETSC ERROR: Configure options --download-f2cblaslapack=yes --with-scalar-type=complex --with-fortran=0 --with-debugging=0 --download-mpich --with-shared-libraries=0 --with-petsc-arch=linux-c-no-debug-complex
+[21]PETSC ERROR: #1 PetscBinaryRead() line 274 in /home/xinzhewu/Petsc/petsc-3.6.4/src/sys/fileio/sysio.c
+[21]PETSC ERROR: #2 MatLoad_SeqAIJ() line 4164 in /home/xinzhewu/Petsc/petsc-3.6.4/src/mat/impls/aij/seq/aij.c
+[21]PETSC ERROR: #3 MatLoad() line 998 in /home/xinzhewu/Petsc/petsc-3.6.4/src/mat/interface/matrix.c
+[21]PETSC ERROR: #4 read_matrix_vector() line 23 in read_matrix.c
+[21]PETSC ERROR: ------------------------------------------------------------------------
+[21]PETSC ERROR: Caught signal number 11 SEGV: Segmentation Violation, probably memory access out of range
+[21]PETSC ERROR: Try option -start_in_debugger or -on_error_attach_debugger
+[21]PETSC ERROR: or see http://www.mcs.anl.gov/petsc/documentation/faq.html#valgrind
+[21]PETSC ERROR: or try http://valgrind.org on GNU/linux and Apple Mac OS X to find memory corruption errors
+[21]PETSC ERROR: configure using --with-debugging=yes, recompile, link, and run 
+[21]PETSC ERROR: to get more information on the crash.
+[21]PETSC ERROR: --------------------- Error Message --------------------------------------------------------------
+[21]PETSC ERROR: Signal received
+[21]PETSC ERROR: See http://www.mcs.anl.gov/petsc/documentation/faq.html for trouble shooting.
+[21]PETSC ERROR: Petsc Release Version 3.6.4, Apr, 12, 2016 
+[21]PETSC ERROR: ./hyperh on a linux-c-no-debug-complex named romeo1 by xinzhewu Wed Mar 22 16:15:35 2017
+[21]PETSC ERROR: Configure options --download-f2cblaslapack=yes --with-scalar-type=complex --with-fortran=0 --with-debugging=0 --download-mpich --with-shared-libraries=0 --with-petsc-arch=linux-c-no-debug-complex
+[21]PETSC ERROR: #5 User provided function() line 0 in  unknown file
+application called MPI_Abort(comm=0x84000002, 59) - process 0
+[cli_21]: aborting job:
+application called MPI_Abort(comm=0x84000002, 59) - process 0
+[10]PETSC ERROR: --------------------- Error Message --------------------------------------------------------------
+[10]PETSC ERROR: Read from file failed
+[10]PETSC ERROR: Read past end of file
+[10]PETSC ERROR: See http://www.mcs.anl.gov/petsc/documentation/faq.html for trouble shooting.
+[10]PETSC ERROR: Petsc Release Version 3.6.4, Apr, 12, 2016 
+[10]PETSC ERROR: ./hyperh on a linux-c-no-debug-complex named romeo1 by xinzhewu Wed Mar 22 16:15:35 2017
+[10]PETSC ERROR: Configure options --download-f2cblaslapack=yes --with-scalar-type=complex --with-fortran=0 --with-debugging=0 --download-mpich --with-shared-libraries=0 --with-petsc-arch=linux-c-no-debug-complex
+[10]PETSC ERROR: #1 PetscBinaryRead() line 274 in /home/xinzhewu/Petsc/petsc-3.6.4/src/sys/fileio/sysio.c
+[10]PETSC ERROR: #2 MatLoad_SeqAIJ() line 4164 in /home/xinzhewu/Petsc/petsc-3.6.4/src/mat/impls/aij/seq/aij.c
+[10]PETSC ERROR: #3 MatLoad() line 998 in /home/xinzhewu/Petsc/petsc-3.6.4/src/mat/interface/matrix.c
+[10]PETSC ERROR: #4 read_matrix_vector() line 23 in read_matrix.c
+[10]PETSC ERROR: ------------------------------------------------------------------------
+[10]PETSC ERROR: Caught signal number 11 SEGV: Segmentation Violation, probably memory access out of range
+[10]PETSC ERROR: Try option -start_in_debugger or -on_error_attach_debugger
+[10]PETSC ERROR: or see http://www.mcs.anl.gov/petsc/documentation/faq.html#valgrind
+[10]PETSC ERROR: or try http://valgrind.org on GNU/linux and Apple Mac OS X to find memory corruption errors
+[10]PETSC ERROR: configure using --with-debugging=yes, recompile, link, and run 
+[10]PETSC ERROR: to get more information on the crash.
+[10]PETSC ERROR: --------------------- Error Message --------------------------------------------------------------
+[10]PETSC ERROR: Signal received
+[10]PETSC ERROR: See http://www.mcs.anl.gov/petsc/documentation/faq.html for trouble shooting.
+[10]PETSC ERROR: Petsc Release Version 3.6.4, Apr, 12, 2016 
+[10]PETSC ERROR: ./hyperh on a linux-c-no-debug-complex named romeo1 by xinzhewu Wed Mar 22 16:15:35 2017
+[10]PETSC ERROR: Configure options --download-f2cblaslapack=yes --with-scalar-type=complex --with-fortran=0 --with-debugging=0 --download-mpich --with-shared-libraries=0 --with-petsc-arch=linux-c-no-debug-complex
+[10]PETSC ERROR: #5 User provided function() line 0 in  unknown file
+application called MPI_Abort(comm=0x84000002, 59) - process 0
+[cli_10]: aborting job:
+application called MPI_Abort(comm=0x84000002, 59) - process 0
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   PID 2414 RUNNING AT romeo1
+=   EXIT CODE: 59
+=   CLEANING UP REMAINING PROCESSES
+=   YOU CAN IGNORE THE BELOW CLEANUP MESSAGES
+===================================================================================
