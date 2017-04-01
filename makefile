@@ -8,10 +8,10 @@
 
 # Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
 # without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
-# and this permission notice appear in supporting documentation, and that the names of Addison Wesley Longman or 
-# the author are not used in advertising or publicity pertaining to distribution of the software without specific, 
-# written prior permission. Addison Wesley Longman and the author make no representations about the suitability of 
-# this software for any purpose. It is provided "as is" without express or implied warranty.
+# and this permission notice appear in supporting documentation, and that the names of all the authors are not used 
+# in advertising or publicity pertaining to distribution of the software without specific, written prior permission.
+# Addison Wesley Longman and the author make no representations about the suitability of this software for any purpose.
+# It is provided "as is" without express or implied warranty.
 
 # You should have received a copy of the GNU Lesser General Public License along with HPDDM.  If not, see 
 # <http://www.gnu.org/licenses/>.
