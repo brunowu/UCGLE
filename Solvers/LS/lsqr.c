@@ -1,23 +1,4 @@
-/*
-
-This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
-<serge.petiton@univ-lille1.fr>.
-
-Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
-All rights reserved.
-
-Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
-without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
-and this permission notice appear in supporting documentation, and that the names of all authors are not used in
-advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
-Addison Wesley Longman and the author make no representations about the suitability of this software for any 
-purpose. It is provided "as is" without express or implied warranty.
-
-You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
-<http://www.gnu.org/licenses/>.
-
-*/
-
+/*CREATED BY PIERRE-YVES AQUILANTI 2011*/
 #include "lsqr.h"
 
 PetscErrorCode LSQR(com_lsa * com, int * vector_size){
@@ -116,6 +97,7 @@ PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 				}
 			} else {
 				ierr=readBinaryScalarArray(load_path,&cumul, eigen_tri);CHKERRQ(ierr);
+				PetscPrintf(PETSC_COMM_WORLD, "LS has read the local file\n");
 				data_load=PETSC_FALSE;
 				data_load_any=PETSC_FALSE;
 				data_size=cumul;
@@ -130,10 +112,15 @@ PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 				mu2=0;
 				/* convex hull computation */
 				if(chsign>0){
+					//keepPositif(eigen_tri,&cumul);
 					convhull(eigen_tri, c, d, chsign, &mu1, 0, 0);
+					printf("@} LSQR convhul negatif chsigne %d cumul %d mu1 %d\n",chsign,cumul,mu1);
+
 				}
 				if(chsign<cumul){
 					convhull(eigen_tri, c, d, cumul-chsign, &mu2, chsign, mu1);
+					printf("@} LSQR convhul positif chsigne %d cumul %d mu1 %d mu2 %d\n",chsign,cumul,mu1,mu2);
+
 				}
 				mu=mu1+mu2;
 				/* Ellipse computation */
@@ -162,6 +149,7 @@ PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 			/* and send it */
 			result_array_size=2+3*ls_eigen;
 			mpi_lsa_com_array_send(com, &result_array_size,result_array);
+                        PetscPrintf(PETSC_COMM_WORLD, "LS has sent the parameters\n");
 		}
 		if(ls_eigen>1){
 		  ls_eigen=0;

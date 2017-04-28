@@ -1,23 +1,4 @@
-/*
-
-This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
-<serge.petiton@univ-lille1.fr>.
-
-Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
-All rights reserved.
-
-Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
-without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
-and this permission notice appear in supporting documentation, and that the names of all authors are not used in
-advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
-Addison Wesley Longman and the author make no representations about the suitability of this software for any 
-purpose. It is provided "as is" without express or implied warranty.
-
-You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
-<http://www.gnu.org/licenses/>.
-
-*/
-
+/*Copyright (c) 2011—2017. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
 #include "read_matrix.h"
 
 PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int * communicator){
@@ -50,7 +31,7 @@ PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int * communicator){
 	if (!flagb) {
 		/* the user did not provide a vector, so generate it*/
 		generate_random_seed_vector(size, -10.0, 10.0, 0, v);
-		
+		PetscPrintf(PETSC_COMM_WORLD,"Generated right hand side matrix b\n");		
 	} else {
 		PetscPrintf(PETSC_COMM_WORLD,"Loading Vector : %s\n",fileb);
 		ierr=PetscViewerBinaryOpen(PETSC_COMM_WORLD,fileb,FILE_MODE_READ,&fd);CHKERRQ(ierr);

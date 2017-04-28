@@ -7,9 +7,9 @@
 
 #SBATCH --time=02:30:00
 
-#SBATCH -n 253
+#SBATCH -n 23
 
 
-make runutm300
+make runa
 
 

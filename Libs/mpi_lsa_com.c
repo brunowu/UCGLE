@@ -1,23 +1,4 @@
-/*
-
-This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
-<serge.petiton@univ-lille1.fr>.
-
-Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
-All rights reserved.
-
-Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
-without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
-and this permission notice appear in supporting documentation, and that the names of all authors are not used in
-advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
-Addison Wesley Longman and the author make no representations about the suitability of this software for any 
-purpose. It is provided "as is" without express or implied warranty.
-
-You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
-<http://www.gnu.org/licenses/>.
-
-*/
-
+/*Copyright (c) 2011—2017. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
 #include "mpi_lsa_com.h"
 
 /***********************************************************************************
@@ -257,6 +238,9 @@ int mpi_lsa_com_array_send(com_lsa * com, int * size, PetscScalar * data){
 	/* for each node in the out domain */
 	for(i=0;i<com->out_number;i++){
 		/* we send a portion of data */
+	       
+ 		printf("Send size=%d (%d scalars) to %d \n",*size,*size/8,i);
+
 		MPI_Isend(com->array_out_sended_buffer,*size,MPIU_SCALAR,i,com->nbr_array_sended + i,com->out_com,&com->array_requests[i]);
 		com->out_vec_sended++;
 	}
@@ -276,6 +260,8 @@ int mpi_lsa_com_array_recv(com_lsa * com, int * size, PetscScalar * data){
 
 	/* how large will be the array */
 	MPI_Get_count(&status,MPIU_SCALAR,size);
+
+	printf("%d Receive size=%d (%d scalars) msg Number = %d\n", com->rank_world,*size,*size/8, status.MPI_TAG-com->rank_group);
 
 	/* receive the data array */
 	MPI_Recv(data,*size,MPIU_SCALAR,status.MPI_SOURCE,status.MPI_TAG,com->in_com,&status);

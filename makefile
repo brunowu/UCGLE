@@ -1,23 +1,4 @@
-#
-
-# This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
-# <serge.petiton@univ-lille1.fr>.
-
-# Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
-# All rights reserved.
-
-# Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
-# without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
-# and this permission notice appear in supporting documentation, and that the names of all the authors are not used 
-# in advertising or publicity pertaining to distribution of the software without specific, written prior permission.
-# Addison Wesley Longman and the author make no representations about the suitability of this software for any purpose.
-# It is provided "as is" without express or implied warranty.
-
-# You should have received a copy of the GNU Lesser General Public License along with HPDDM.  If not, see 
-# <http://www.gnu.org/licenses/>.
-
-#
-
+#Copyright (c) 2011—2017. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved#
 ALL:  blib exec
 
 #compilation flags
@@ -42,28 +23,28 @@ MDIR=./data
 #DEBUG_VALGRIND = valgrind --tool=memcheck -q
 #DEBUG_KSP_VIEW = -ksp_view
 
-RESTART_MAX = 250
+RESTART_MAX = 20
 GMRES_PRECISION= 1e-10
 GMRES_RESTART= ${RESTART_MAX}
 GMRES_NB_NODES=1
-#GMRES_MONITOR= -ksp_monitor_true_residual
-NTIMES = 6
-
+GMRES_MONITOR= -ksp_monitor_true_residual
+NTIMES = 1
 GMRES_FLAGS= -ksp_rtol 1e-100 -ksp_divtol 1e1000 -ksp_max_it 20000 -pc_type none -ksp_atol ${GMRES_PRECISION} -ksp_gmres_restart ${GMRES_RESTART}\
-		${GMRES_MONITOR} -lsa_gmres ${GMRES_NB_NODES} -ntimes ${NTIMES} -log_summary
+		${GMRES_MONITOR} -lsa_gmres ${GMRES_NB_NODES} -ntimes ${NTIMES} \
+		#-log_summary
 
 #arnoldi options
 ARNOLDI_PRECISION= 1e-1
-ARNOLDI_NBEIGEN= 2
+ARNOLDI_NBEIGEN= 18
 ARNOLDI_NB_NODES=1
-ARNOLDI_MONITOR = -eps_monitor
-ARNOLDI_FLAGS= -eps_ncv 305 -eps_type arnoldi -eps_true_residual -eps_largest_imaginary -eps_nev ${ARNOLDI_NBEIGEN} -eps_tol ${ARNOLDI_PRECISION} \
+ARNOLDI_MONITOR = -eps_monitor_conv
+ARNOLDI_FLAGS= -eps_ncv 20 -eps_type arnoldi -eps_true_residual -eps_largest_imaginary -eps_nev ${ARNOLDI_NBEIGEN} -eps_tol ${ARNOLDI_PRECISION} \
                 ${ARNOLDI_MONITOR} -lsa_arnoldi ${ARNOLDI_NB_NODES} -eps_max_it 50
 #ls options
 LS_POWER = 10
 LS_POLY_APPL = 5
-LS_LATENCY=2
-LS_PC_USE =1
+LS_LATENCY=1
+LS_PC_USE =0
 LS_NO_USE_LS= -ksp_ls_nols
 LS_HANG_IT= 20000
 LS_HANG_TIME=  100000
@@ -144,13 +125,11 @@ effacer :
 
 runutm300:
 	-@${MPIEXEC} -np ${MPI_NODES} ${DEBUG_VALGRIND} ./hyperh  ${GLSA_FLAGS} \
-	-mfile ${MDIR}/utm300.mtx_300x300_3155nnz \
-	2>&1 | tee log.txt
+	-mfile ${MDIR}/utm300.mtx_300x300_3155nnz
 
 runmatBlock:
 	-@${MPIEXEC} -np ${MPI_NODES} ${DEBUG_VALGRIND} ./hyperh  ${GLSA_FLAGS} \
-        -mfile ${MDIR}/matBlock_nb_300_90000x90000_1.88984e+06_nnz \
-        2>&1 | tee log.txt
+        -mfile ${MDIR}/matBlock_nb_300_90000x90000_1.88984e+06_nnz
 
 runmatLine:
 	-@${MPIEXEC} -np ${MPI_NODES} ${DEBUG_VALGRIND} ./hyperh  ${GLSA_FLAGS} \
@@ -159,5 +138,11 @@ runmatLine:
 
 runa:
 	-@${MPIEXEC} -np ${MPI_NODES} ${DEBUG_VALGRIND} ./hyperh  ${GLSA_FLAGS} \
-        -mfile ${MDIR}/matrix_generator_nb_800_240000x240000_2.54954e+06_nnz \
-        2>&1 | tee log.txt
+        -mfile ${MDIR}/Eigen_known_matrix_nb_274_274x274_3179_nnz
+
+runb:
+	-@${MPIEXEC} -np ${MPI_NODES} ${DEBUG_VALGRIND} ./hyperh  ${GLSA_FLAGS} \
+        -mfile ${MDIR}/Eigen_known_matrix_nb_274_274x274_5734_nnz
+runc:
+	-@${MPIEXEC} -np ${MPI_NODES} ${DEBUG_VALGRIND} ./hyperh  ${GLSA_FLAGS} \
+        -mfile ${MDIR}/Eigen_known_matrix_nb_300_300x300_10264_nnz
