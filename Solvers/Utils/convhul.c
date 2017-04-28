@@ -1,23 +1,4 @@
-/*
-
-This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
-<serge.petiton@univ-lille1.fr>.
-
-Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
-All rights reserved.
-
-Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
-without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
-and this permission notice appear in supporting documentation, and that the names of all authors are not used in
-advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
-Addison Wesley Longman and the author make no representations about the suitability of this software for any 
-purpose. It is provided "as is" without express or implied warranty.
-
-You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
-<http://www.gnu.org/licenses/>.
-
-*/
-
+/*Copyright (c) 2011—2016. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
 #include "convhul.h"
 
 int convhull(PetscScalar * ab, PetscScalar * c, PetscScalar * d, PetscInt n, PetscInt * ne, PetscInt offset, PetscInt mu){
@@ -50,7 +31,10 @@ int convhull(PetscScalar * ab, PetscScalar * c, PetscScalar * d, PetscInt n, Pet
 	for(i=1;i<n;i++){
 		if(PetscRealPart(ab[i+offset])<=PetscRealPart(s)){
 			s=(PetscScalar)PetscRealPart(ab[offset])+PETSC_i*(PetscScalar)0.0;
+	       		
+///////			s=(PetscScalar)PetscRealPart(ab[i+offset])+PETSC_i*(PetscScalar)0.0;
 			m1=i;
+//////			PetscPrintf(PETSC_COMM_WORLD, "convex hull test points\n");
 		}
 	}
 	
@@ -61,7 +45,7 @@ int convhull(PetscScalar * ab, PetscScalar * c, PetscScalar * d, PetscInt n, Pet
 	if(PetscImaginaryPart(ab[m1+offset])<deps){
 		l[m1]=0;
 	}else{
-		m1=0;
+////////		m1=0;
    		ab[m1+offset]=(PetscScalar) PetscRealPart(s) + (PetscScalar)PETSC_i*dzero;
 	}
 	
