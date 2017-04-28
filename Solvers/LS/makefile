@@ -11,7 +11,7 @@
 #Xinzhe WU and the author make no representations about the suitability of this software for any purpose. It is 
 #provided "as is" without express or implied warranty.
  
-#You should have received a copy of the GNU Lesser General Public License along with HPDDM.  If not, see 
+#You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
 #<http://www.gnu.org/licenses/>.
 
 #For more information, contact with Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr>.
