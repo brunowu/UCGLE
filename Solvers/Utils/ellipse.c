@@ -134,7 +134,7 @@ PetscErrorCode ellipse(PetscScalar * c, PetscScalar * d, PetscInt n, PetscInt mu
 	#ifdef DEBUG
 		PetscPrintf(PETSC_COMM_WORLD,"$} Ellipse Computing Edges\n");
 	#endif
-	/* CALCUL DES SOMMETS A PARTIR DES CENTRES ET DES DEMI-DISTANCES */
+
 	for(i=0;i<n-1;i++){
 		hk[i]=c[i]-d[i];
 	}
@@ -150,7 +150,7 @@ PetscErrorCode ellipse(PetscScalar * c, PetscScalar * d, PetscInt n, PetscInt mu
 		PetscPrintf(PETSC_COMM_WORLD,"$} Ellipse Research two points optimal ellipse\n");
 	#endif
 	
-	/* Recherche de l'ellipse optimale a deux points */
+	/* find two points optimal ellipse */
 	info1=0;
 	info2=0;
 	
@@ -183,7 +183,7 @@ PetscErrorCode ellipse(PetscScalar * c, PetscScalar * d, PetscInt n, PetscInt mu
 		PetscPrintf(PETSC_COMM_WORLD,"$} Ellipse Research three points optimal ellipse\n");
 	#endif
 	
-	/* Recherche de l'ellipse optimale a trois points */
+	/* find three points optimal ellipse */
 	
 	if(info2!=1){
 		aire=1.e16;

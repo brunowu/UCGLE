@@ -23,8 +23,8 @@
 
 /* 
 ! -----------------------------------------------------------------------
-! Classe les valeurs propres dans l'ordre croissant des parties reelles
-! Repere le rang de la derniere ayant une partie reelle negative
+! Classes the eigenvalues in ascending order of the real parts
+! Finds the rank of the last one having a real part negative
 ! -----------------------------------------------------------------------
  */
 PetscErrorCode tri(PetscScalar * vp, PetscInt nValues, PetscInt * ch_signe){
@@ -37,10 +37,6 @@ PetscErrorCode tri(PetscScalar * vp, PetscInt nValues, PetscInt * ch_signe){
 	{
 		sort(vp,0,nValues);
 		
-
-	/* 
-	 ! Comptage des valeurs propres ayant leur partie reelle negative
- 	*/	
  
  		*ch_signe=0;
  	
@@ -57,7 +53,7 @@ PetscErrorCode tri(PetscScalar * vp, PetscInt nValues, PetscInt * ch_signe){
 }
 
 /* 
-! Elimine les valeurs propres dont la partie imaginaire est negative
+! Eliminates the eigenvalues whose imaginary part is negative
  */
 PetscErrorCode epurer(PetscScalar * vp, PetscInt * nValues){
 	PetscInt i,nKeep;

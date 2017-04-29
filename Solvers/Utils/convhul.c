@@ -28,11 +28,6 @@ int convhull(PetscScalar * ab, PetscScalar * c, PetscScalar * d, PetscInt n, Pet
 	PetscInt * l;
 	PetscErrorCode ierr;
 	
-	/* Offset:  Acces aux elements [1+offset:n+offset]
-                     ! des tableaux a et b */
-	/* mu: 	! Acces aux elements [1+mu:n+mu]
-	 ! des tableaux cr, ci, dr, di */
-	
 	ierr=PetscMalloc((n+2)*sizeof(PetscInt),&l);CHKERRQ(ierr);
 	ierr=PetscMalloc((n+2)*sizeof(PetscScalar),&hk);CHKERRQ(ierr);
 	
@@ -43,8 +38,7 @@ int convhull(PetscScalar * ab, PetscScalar * c, PetscScalar * d, PetscInt n, Pet
 		l[i]=1;
 	}
 	
-	
-	/* trouve l'indice de la valeur propres à plus petite partie réelle*/
+	/* find the index of eigenvalues with most small real part*/
 	s=(PetscScalar)PetscRealPart(ab[offset])+PETSC_i*(PetscScalar)0.0;
 	m1=0;
 	
@@ -61,7 +55,6 @@ int convhull(PetscScalar * ab, PetscScalar * c, PetscScalar * d, PetscInt n, Pet
 	*ne=0;
 	hk[0]=s+PETSC_i*dzero; /* init complex array by s+i*0 */
 	
-	/* met la partie imaginaire de la valeur propre de plus petite partie réelle à 0 */
 	if(PetscImaginaryPart(ab[m1+offset])<deps){
 		l[m1]=0;
 	}else{
