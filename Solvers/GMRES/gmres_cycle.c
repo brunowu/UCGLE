@@ -1,24 +1,4 @@
-/*
- This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
- <serge.petiton@univ-lille1.fr>.
- 
- Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
- All rights reserved.
- 
- Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
- without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
- and this permission notice appear in supporting documentation, and that the names of all authors are not used in 
- advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
- Xinzhe WU and the author make no representations about the suitability of this software for any purpose. It is 
- provided "as is" without express or implied warranty.
- 
- You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
- <http://www.gnu.org/licenses/>.
-
- For more information, contact with Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr>.
- 
- */
-
+/*Copyright (c) 2011—2017. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
 #include "gmres_cycle.h"
 
 #undef __FUNCT__
@@ -48,6 +28,7 @@ PetscErrorCode MyKSPFGMRESCycle(PetscInt *itcount,KSP ksp)
 
   /* initial residual is in VEC_VV(0)  - compute its norm*/
   ierr = VecNorm(VEC_VV(0),NORM_2,&res_norm);CHKERRQ(ierr);
+  KSPCheckNorm(ksp,res_norm);
 
   /* first entry in right-hand-side of hessenberg system is just
      the initial residual norm */
@@ -83,24 +64,31 @@ PetscErrorCode MyKSPFGMRESCycle(PetscInt *itcount,KSP ksp)
       /* (loc_it+1) is passed in as number of the first vector that should
          be allocated */
     }
-    /* CHANGE THE PRECONDITIONER? */
+     /* CHANGE THE PRECONDITIONER? */
     /* ModifyPC is the callback function that can be used to
        change the PC or its attributes before its applied */
     (*fgmres->modifypc)(ksp,ksp->its,loc_it,res_norm,fgmres->modifyctx);
 
+
     /* apply PRECONDITIONER to direction vector and store with
        preconditioned vectors in prevec */
     ierr = KSP_PCApply(ksp,VEC_VV(loc_it),PREVEC(loc_it));CHKERRQ(ierr);
+
     ierr = PCGetOperators(ksp->pc,&Amat,&Pmat);CHKERRQ(ierr);
     /* Multiply preconditioned vector by operator - put in VEC_VV(loc_it+1) */
     ierr = KSP_MatMult(ksp,Amat,PREVEC(loc_it),VEC_VV(1+loc_it));CHKERRQ(ierr);
+
+
     /* update hessenberg matrix and do Gram-Schmidt - new direction is in
        VEC_VV(1+loc_it)*/
     ierr = (*fgmres->orthog)(ksp,loc_it);CHKERRQ(ierr);
+
     /* new entry in hessenburg is the 2-norm of our new direction */
     ierr = VecNorm(VEC_VV(loc_it+1),NORM_2,&tt);CHKERRQ(ierr);
+
     *HH(loc_it+1,loc_it)  = tt;
     *HES(loc_it+1,loc_it) = tt;
+
     /* Happy Breakdown Check */
     hapbnd = PetscAbsScalar((tt) / *RS(loc_it));
     /* RS(loc_it) contains the res_norm from the last iteration  */
@@ -193,15 +181,12 @@ PetscErrorCode MyKSPFGMRESUpdateHessenberg(KSP ksp,PetscInt it,PetscBool hapend,
 
   for (j=1; j<=it; j++) {
     tt  = *hh;
-#if defined(PETSC_USE_COMPLEX)
     *hh = PetscConj(*cc) * tt + *ss * *(hh+1);
-#else
-    *hh = *cc * tt + *ss * *(hh+1);
-#endif
     hh++;
     *hh = *cc++ * *hh - (*ss++ * tt);
     /* hh, cc, and ss have all been incremented one by end of loop */
   }
+
 
   /*
     compute the new plane rotation, and apply it to:
@@ -216,31 +201,22 @@ PetscErrorCode MyKSPFGMRESUpdateHessenberg(KSP ksp,PetscInt it,PetscBool hapend,
   /* compute new plane rotation */
 
   if (!hapend) {
-#if defined(PETSC_USE_COMPLEX)
-    tt        = PetscSqrtScalar(PetscConj(*hh) * *hh + PetscConj(*(hh+1)) * *(hh+1));
-#else
-    tt        = PetscSqrtScalar(*hh * *hh + *(hh+1) * *(hh+1));
-#endif
+    tt = PetscSqrtScalar(PetscConj(*hh) * *hh + PetscConj(*(hh+1)) * *(hh+1));
     if (tt == 0.0) {
       ksp->reason = KSP_DIVERGED_NULL;
       PetscFunctionReturn(0);
     }
 
-    *cc       = *hh / tt;   /* new cosine value */
-    *ss       = *(hh+1) / tt;  /* new sine value */
+    *cc = *hh / tt;         /* new cosine value */
+    *ss = *(hh+1) / tt;        /* new sine value */
 
     /* apply to 1) and 2) */
-    *RS(it+1) = - (*ss * *RS(it));
-#if defined(PETSC_USE_COMPLEX)
+    *RS(it+1) = -(*ss * *RS(it));
     *RS(it)   = PetscConj(*cc) * *RS(it);
     *hh       = PetscConj(*cc) * *hh + *ss * *(hh+1);
-#else
-    *RS(it)   = *cc * *RS(it);
-    *hh       = *cc * *hh + *ss * *(hh+1);
-#endif
 
     /* residual is the last element (it+1) of right-hand side! */
-    *res      = PetscAbsScalar(*RS(it+1));
+    *res = PetscAbsScalar(*RS(it+1));
 
   } else { /* happy breakdown: HH(it+1, it) = 0, therfore we don't need to apply
             another rotation matrix (so RH doesn't change).  The new residual is
@@ -258,8 +234,8 @@ PetscErrorCode MyKSPFGMRESUpdateHessenberg(KSP ksp,PetscInt it,PetscBool hapend,
 #define __FUNCT__ "MyKSPFGMRESGetNewVectors"
 PetscErrorCode MyKSPFGMRESGetNewVectors(KSP ksp,PetscInt it)
 {
-  KSP_FGMRES     *fgmres = (KSP_FGMRES *)ksp->data;
-  PetscInt       nwork = fgmres->nwork_alloc; /* number of work vector chunks allocated */
+  KSP_FGMRES     *fgmres = (KSP_FGMRES*)ksp->data;
+  PetscInt       nwork   = fgmres->nwork_alloc; /* number of work vector chunks allocated */
   PetscInt       nalloc;                      /* number to allocate */
   PetscErrorCode ierr;
   PetscInt       k;
@@ -267,9 +243,10 @@ PetscErrorCode MyKSPFGMRESGetNewVectors(KSP ksp,PetscInt it)
   PetscFunctionBegin;
   nalloc = fgmres->delta_allocate; /* number of vectors to allocate
                                       in a single chunk */
+
   /* Adjust the number to allocate to make sure that we don't exceed the
      number of available slots (fgmres->vecs_allocated)*/
-  if (it + VEC_OFFSET + nalloc >= fgmres->vecs_allocated){
+  if (it + VEC_OFFSET + nalloc >= fgmres->vecs_allocated) {
     nalloc = fgmres->vecs_allocated - it - VEC_OFFSET;
   }
   if (!nalloc) PetscFunctionReturn(0);
@@ -277,7 +254,7 @@ PetscErrorCode MyKSPFGMRESGetNewVectors(KSP ksp,PetscInt it)
   fgmres->vv_allocated += nalloc; /* vv_allocated is the number of vectors allocated */
 
   /* work vectors */
-  ierr = KSPCreateVecs(ksp,nalloc,&fgmres->user_work[nwork],0,PETSC_NULL);CHKERRQ(ierr);
+  ierr = KSPCreateVecs(ksp,nalloc,&fgmres->user_work[nwork],0,NULL);CHKERRQ(ierr);
   ierr = PetscLogObjectParents(ksp,nalloc,fgmres->user_work[nwork]);CHKERRQ(ierr);
   for (k=0; k < nalloc; k++) {
     fgmres->vecs[it+VEC_OFFSET+k] = fgmres->user_work[nwork][k];
@@ -286,10 +263,10 @@ PetscErrorCode MyKSPFGMRESGetNewVectors(KSP ksp,PetscInt it)
   fgmres->mwork_alloc[nwork] = nalloc;
 
   /* preconditioned vectors */
-  ierr = KSPCreateVecs(ksp,nalloc,&fgmres->prevecs_user_work[nwork],0,PETSC_NULL);CHKERRQ(ierr);
+  ierr = KSPCreateVecs(ksp,nalloc,&fgmres->prevecs_user_work[nwork],0,NULL);CHKERRQ(ierr);
   ierr = PetscLogObjectParents(ksp,nalloc,fgmres->prevecs_user_work[nwork]);CHKERRQ(ierr);
   for (k=0; k < nalloc; k++) {
-    fgmres->prevecs[it+VEC_OFFSET+k] = fgmres->prevecs_user_work[nwork][k];
+    fgmres->prevecs[it+k] = fgmres->prevecs_user_work[nwork][k];
   }
 
   /* increment the number of work vector chunks */
@@ -304,7 +281,7 @@ PetscErrorCode MyKSPFGMRESBuildSoln(PetscScalar* nrs,Vec vguess,Vec vdest,KSP ks
   PetscScalar    tt;
   PetscErrorCode ierr;
   PetscInt       ii,k,j;
-  KSP_FGMRES     *fgmres = (KSP_FGMRES *)(ksp->data);
+  KSP_FGMRES     *fgmres = (KSP_FGMRES*)(ksp->data);
 
   PetscFunctionBegin;
   /* Solve for solution vector that minimizes the residual */
@@ -325,10 +302,10 @@ PetscErrorCode MyKSPFGMRESBuildSoln(PetscScalar* nrs,Vec vguess,Vec vdest,KSP ks
     nrs[it] = 0.0;
   }
   for (ii=1; ii<=it; ii++) {
-    k   = it - ii;
-    tt  = *RS(k);
-    for (j=k+1; j<=it; j++) tt  = tt - *HH(k,j) * nrs[j];
-    nrs[k]   = tt / *HH(k,k);
+    k  = it - ii;
+    tt = *RS(k);
+    for (j=k+1; j<=it; j++) tt = tt - *HH(k,j) * nrs[j];
+    nrs[k] = tt / *HH(k,k);
   }
 
   /* Accumulate the correction to the soln of the preconditioned prob. in
@@ -340,7 +317,7 @@ PetscErrorCode MyKSPFGMRESBuildSoln(PetscScalar* nrs,Vec vguess,Vec vdest,KSP ks
   if (vdest != vguess) {
     ierr = VecCopy(VEC_TEMP,vdest);CHKERRQ(ierr);
     ierr = VecAXPY(vdest,1.0,vguess);CHKERRQ(ierr);
-  } else  {/* replace guess with solution */
+  } else { /* replace guess with solution */
     ierr = VecAXPY(vdest,1.0,VEC_TEMP);CHKERRQ(ierr);
   }
   PetscFunctionReturn(0);

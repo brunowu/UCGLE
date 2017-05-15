@@ -1,24 +1,4 @@
-/*
- This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
- <serge.petiton@univ-lille1.fr>.
- 
- Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
- All rights reserved.
- 
- Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
- without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
- and this permission notice appear in supporting documentation, and that the names of all authors are not used in 
- advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
- Xinzhe WU and the author make no representations about the suitability of this software for any purpose. It is 
- provided "as is" without express or implied warranty.
- 
- You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
- <http://www.gnu.org/licenses/>.
-
- For more information, contact with Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr>.
- 
- */
-
+/*Copyright (c) 2011—2017. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
 #include "gmres_solve.h"
 
 #undef __FUNCT__
@@ -28,10 +8,9 @@ static PetscErrorCode MyKSPFGMRESResidual(KSP ksp)
   KSP_FGMRES     *fgmres = (KSP_FGMRES*)(ksp->data);
   Mat            Amat,Pmat;
   PetscErrorCode ierr;
-
+       
   PetscFunctionBegin;
   ierr = PCGetOperators(ksp->pc,&Amat,&Pmat);CHKERRQ(ierr);
-
   /* put A*x into VEC_TEMP */
   ierr = KSP_MatMult(ksp,Amat,ksp->vec_sol,VEC_TEMP);CHKERRQ(ierr);
   /* now put residual (-A*x + f) into vec_vv(0) */
@@ -66,12 +45,13 @@ PetscErrorCode MyKSPSolve_FGMRES(KSP ksp,com_lsa * com)
   /* now the residual is in VEC_VV(0) - which is what
      KSPFGMRESCycle expects... */
 
-  ierr = MyKSPFGMRESCycle(&cycle_its,ksp);CHKERRQ(ierr);
+  ierr = KSPFGMRESCycle(&cycle_its,ksp);CHKERRQ(ierr);
   while (!ksp->reason) {
     if(!GmresLSAPrecond(com,ksp))
     {
-///	    PetscPrintf(PETSC_COMM_WORLD,"--->>>Preconditioning of LS method in: %d iterations\n\n",ksp->its);
+	PetscPrintf(PETSC_COMM_WORLD,"\n@@@>>>Preconditioning of LS method in: %d iterations\n\n",ksp->its);
     }
+
 
     ierr = MyKSPFGMRESResidual(ksp);CHKERRQ(ierr);
     if (ksp->its >= ksp->max_it) break;

@@ -1,25 +1,5 @@
-/*
- This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
- <serge.petiton@univ-lille1.fr>.
- 
- Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
- All rights reserved.
- 
- Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
- without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
- and this permission notice appear in supporting documentation, and that the names of all authors are not used in 
- advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
- Xinzhe WU and the author make no representations about the suitability of this software for any purpose. It is 
- provided "as is" without express or implied warranty.
- 
- You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
- <http://www.gnu.org/licenses/>.
-
- For more information, contact with Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr>.
- 
- */
-
- #include "lsqr.h"
+/*CREATED BY PIERRE-YVES AQUILANTI 2011*/
+#include "lsqr.h"
 
 PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 	/* variables */
@@ -40,18 +20,18 @@ PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 	sprintf(load_path,"./lsqr.bin");
 	sprintf(export_path,"./lsqr.bin");
 	/* check if there is arguments for ls */
-	ierr=PetscOptionsGetInt(PETSC_NULL,"-ksp_ls_eigen_min",&ls_eigen_min,&flag);CHKERRQ(ierr);
+	ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_eigen_min",&ls_eigen_min,&flag);CHKERRQ(ierr);
 	if(!flag) ls_eigen_min=EIGEN_MIN;
-	ierr=PetscOptionsGetInt(PETSC_NULL,"-ksp_ls_eigen",&ls_eigen,&flag);CHKERRQ(ierr);
+	ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_eigen",&ls_eigen,&flag);CHKERRQ(ierr);
 	if(!flag) ls_eigen=EIGEN_ALL;
 	/* check the number of eigenvalues that one will receive from arnoldi */
-  ierr=PetscOptionsGetInt(PETSC_NULL,"-ksp_ls_k_param",&eigen_max,&flag);CHKERRQ(ierr);
+  ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_k_param",&eigen_max,&flag);CHKERRQ(ierr);
 	if(!flag)eigen_max=ls_eigen;
 
-	ierr=PetscOptionsGetString(PETSC_NULL,"-ksp_ls_load",load_path,PETSC_MAX_PATH_LEN,&data_load);CHKERRQ(ierr);
-	ierr=PetscOptionsHasName(PETSC_NULL,"-ksp_ls_load_any",&data_load_any);CHKERRQ(ierr);
-	ierr=PetscOptionsGetString(PETSC_NULL,"-ksp_ls_export",export_path,PETSC_MAX_PATH_LEN,&data_export);CHKERRQ(ierr);
-	ierr=PetscOptionsHasName(PETSC_NULL,"-ksp_ls_cexport",&continuous_export);CHKERRQ(ierr);
+	ierr=PetscOptionsGetString(NULL,PETSC_NULL,"-ksp_ls_load",load_path,PETSC_MAX_PATH_LEN,&data_load);CHKERRQ(ierr);
+	ierr=PetscOptionsHasName(NULL,PETSC_NULL,"-ksp_ls_load_any",&data_load_any);CHKERRQ(ierr);
+	ierr=PetscOptionsGetString(NULL,PETSC_NULL,"-ksp_ls_export",export_path,PETSC_MAX_PATH_LEN,&data_export);CHKERRQ(ierr);
+	ierr=PetscOptionsHasName(NULL,PETSC_NULL,"-ksp_ls_cexport",&continuous_export);CHKERRQ(ierr);
 
 	ierr=PetscMalloc((*vector_size)*sizeof(PetscScalar),&eigen_tri);
 	ierr=PetscMalloc((*vector_size)*sizeof(PetscScalar),&eigen_cumul);

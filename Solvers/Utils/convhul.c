@@ -1,24 +1,4 @@
-/*
- This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
- <serge.petiton@univ-lille1.fr>.
- 
- Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
- All rights reserved.
- 
- Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
- without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
- and this permission notice appear in supporting documentation, and that the names of all authors are not used in 
- advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
- Xinzhe WU and the author make no representations about the suitability of this software for any purpose. It is 
- provided "as is" without express or implied warranty.
- 
- You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
- <http://www.gnu.org/licenses/>.
-
- For more information, contact with Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr>.
- 
- */
-
+/*Copyright (c) 2011—2016. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
 #include "convhul.h"
 
 int convhull(PetscScalar * ab, PetscScalar * c, PetscScalar * d, PetscInt n, PetscInt * ne, PetscInt offset, PetscInt mu){
@@ -27,6 +7,11 @@ int convhull(PetscScalar * ab, PetscScalar * c, PetscScalar * d, PetscInt n, Pet
 	PetscInt m,i,j,m1;
 	PetscInt * l;
 	PetscErrorCode ierr;
+	
+	/* Offset:  Acces aux elements [1+offset:n+offset]
+                     ! des tableaux a et b */
+	/* mu: 	! Acces aux elements [1+mu:n+mu]
+	 ! des tableaux cr, ci, dr, di */
 	
 	ierr=PetscMalloc((n+2)*sizeof(PetscInt),&l);CHKERRQ(ierr);
 	ierr=PetscMalloc((n+2)*sizeof(PetscScalar),&hk);CHKERRQ(ierr);
@@ -38,7 +23,8 @@ int convhull(PetscScalar * ab, PetscScalar * c, PetscScalar * d, PetscInt n, Pet
 		l[i]=1;
 	}
 	
-	/* find the index of eigenvalues with most small real part*/
+	
+	/* trouve l'indice de la valeur propres à plus petite partie réelle*/
 	s=(PetscScalar)PetscRealPart(ab[offset])+PETSC_i*(PetscScalar)0.0;
 	m1=0;
 	
@@ -55,6 +41,7 @@ int convhull(PetscScalar * ab, PetscScalar * c, PetscScalar * d, PetscInt n, Pet
 	*ne=0;
 	hk[0]=s+PETSC_i*dzero; /* init complex array by s+i*0 */
 	
+	/* met la partie imaginaire de la valeur propre de plus petite partie réelle à 0 */
 	if(PetscImaginaryPart(ab[m1+offset])<deps){
 		l[m1]=0;
 	}else{
