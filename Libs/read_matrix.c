@@ -1,25 +1,5 @@
-/*
- This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
- <serge.petiton@univ-lille1.fr>.
- 
- Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
- All rights reserved.
- 
- Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
- without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
- and this permission notice appear in supporting documentation, and that the names of all authors are not used in 
- advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
- Xinzhe WU and the author make no representations about the suitability of this software for any purpose. It is 
- provided "as is" without express or implied warranty.
- 
- You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
- <http://www.gnu.org/licenses/>.
-
- For more information, contact with Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr>.
- 
- */
-
- #include "read_matrix.h"
+/*Copyright (c) 2011—2017. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
+#include "read_matrix.h"
 
 PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int * communicator){
 	char filea[PETSC_MAX_PATH_LEN];
@@ -31,7 +11,7 @@ PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int * communicator){
 	PetscInt size,sizea;
 	PetscScalar scal;
 
-	ierr=PetscOptionsGetString(PETSC_NULL,"-mfile",filea,PETSC_MAX_PATH_LEN-1,&flaga);CHKERRQ(ierr);
+	ierr=PetscOptionsGetString(NULL,PETSC_NULL,"-mfile",filea,PETSC_MAX_PATH_LEN-1,&flaga);CHKERRQ(ierr);
 	if (!flaga) {
 		sprintf(err,"Error : mfile is not properly set -> %s\n",filea);
 		SETERRQ(*communicator,(PetscErrorCode) 83,err);
@@ -46,7 +26,7 @@ PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int * communicator){
 	ierr=MatGetSize(*A,&size,&sizea);CHKERRQ(ierr);
 	PetscPrintf(PETSC_COMM_WORLD,"Loaded Matrix of size : %d %d\n",size,sizea);
 
-	ierr=PetscOptionsGetString(PETSC_NULL,"-vfile",fileb,PETSC_MAX_PATH_LEN-1,&flagb);CHKERRQ(ierr);
+	ierr=PetscOptionsGetString(NULL,PETSC_NULL,"-vfile",fileb,PETSC_MAX_PATH_LEN-1,&flagb);CHKERRQ(ierr);
 
 	if (!flagb) {
 		/* the user did not provide a vector, so generate it*/
