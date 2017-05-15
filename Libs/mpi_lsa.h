@@ -1,24 +1,4 @@
-/*
- This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
- <serge.petiton@univ-lille1.fr>.
- 
- Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
- All rights reserved.
- 
- Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
- without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
- and this permission notice appear in supporting documentation, and that the names of all authors are not used in 
- advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
- Xinzhe WU and the author make no representations about the suitability of this software for any purpose. It is 
- provided "as is" without express or implied warranty.
- 
- You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
- <http://www.gnu.org/licenses/>.
-
- For more information, contact with Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr>.
- 
- */
-
+/*Copyright (c) 2011—2017. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
 #ifndef MPI_LSA_H_
 #define MPI_LSA_H_
 
@@ -37,7 +17,7 @@
 
 typedef struct _com_lsa{
 	int com_world;							// MPI_COMM_WORLD
-
+/*
 	union {
 		int com[4];
 		int gmres,father,arnoldi,ls;
@@ -58,6 +38,7 @@ typedef struct _com_lsa{
 		int gmres,father,arnoldi,ls;
 	} master;								// group-masters: it indicates the rank_world of the master of each group
 
+*/
 	int size_world;						// size of MPI_COMM_WORLD
 	int com_group;							// group's communicator
 	int rank_group;						//rank in the group
@@ -66,6 +47,28 @@ typedef struct _com_lsa{
 	int rank_world;						// rank in world
 	int recv_flag;							// indicates if there a msg to be received by the group( the master get the information and distribut it)
 												// if true then the master will receive it and the others will wait for a scatter.
+
+
+
+        union {
+                int com[4];
+                int gmres,father,arnoldi,ls;
+        }group;
+
+        union {
+                int com[4];
+                int gmres,father,arnoldi,ls;
+        } inter;                                                                // intercommucators: it contains the intercomm with the leader of the peer group
+
+        union {
+                int com[4];
+                int gmres,father,arnoldi,ls;
+        } size;                                                                 // groups size: it indicates the size of each group
+
+        union {
+                int com[4];
+                int gmres,father,arnoldi,ls;
+        } master;
 
 	int * in_size;							//
 	int * out_size;						//

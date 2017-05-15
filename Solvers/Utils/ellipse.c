@@ -1,24 +1,4 @@
-/*
- This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
- <serge.petiton@univ-lille1.fr>.
- 
- Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
- All rights reserved.
- 
- Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
- without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
- and this permission notice appear in supporting documentation, and that the names of all authors are not used in 
- advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
- Xinzhe WU and the author make no representations about the suitability of this software for any purpose. It is 
- provided "as is" without express or implied warranty.
- 
- You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
- <http://www.gnu.org/licenses/>.
-
- For more information, contact with Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr>.
- 
- */
-
+/*Copyright (c) 2011—2016. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
 #include "ellipse.h"
 
 int ellipse3(PetscScalar xy1, PetscScalar xy2, PetscScalar xy3, PetscReal * a2, PetscReal * b2, PetscReal * c, PetscInt * info){
@@ -134,7 +114,7 @@ PetscErrorCode ellipse(PetscScalar * c, PetscScalar * d, PetscInt n, PetscInt mu
 	#ifdef DEBUG
 		PetscPrintf(PETSC_COMM_WORLD,"$} Ellipse Computing Edges\n");
 	#endif
-
+	/* CALCUL DES SOMMETS A PARTIR DES CENTRES ET DES DEMI-DISTANCES */
 	for(i=0;i<n-1;i++){
 		hk[i]=c[i]-d[i];
 	}
@@ -150,7 +130,7 @@ PetscErrorCode ellipse(PetscScalar * c, PetscScalar * d, PetscInt n, PetscInt mu
 		PetscPrintf(PETSC_COMM_WORLD,"$} Ellipse Research two points optimal ellipse\n");
 	#endif
 	
-	/* find two points optimal ellipse */
+	/* Recherche de l'ellipse optimale a deux points */
 	info1=0;
 	info2=0;
 	
@@ -183,7 +163,7 @@ PetscErrorCode ellipse(PetscScalar * c, PetscScalar * d, PetscInt n, PetscInt mu
 		PetscPrintf(PETSC_COMM_WORLD,"$} Ellipse Research three points optimal ellipse\n");
 	#endif
 	
-	/* find three points optimal ellipse */
+	/* Recherche de l'ellipse optimale a trois points */
 	
 	if(info2!=1){
 		aire=1.e16;

@@ -1,24 +1,4 @@
-/*
- This file is part of software for the implementation of UCGLE method, under the supervision of Serge G. Petiton
- <serge.petiton@univ-lille1.fr>.
- 
- Copyright (C) 2011—. Pierre-Yves AQUILANTI and Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr> in Maison de la Simulation. 
- All rights reserved.
- 
- Permission to use, copy, modify and distribute this software for personal and educational use is hereby granted
- without fee, provided that the above copyright notice appears in all copies and that both that copyright notice 
- and this permission notice appear in supporting documentation, and that the names of all authors are not used in 
- advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
- Xinzhe WU and the author make no representations about the suitability of this software for any purpose. It is 
- provided "as is" without express or implied warranty.
- 
- You should have received a copy of the GNU Lesser General Public License along with UCGLE.  If not, see 
- <http://www.gnu.org/licenses/>.
-
- For more information, contact with Xinzhe WU <xinzhe.wu@ed.univ-lille1.fr>.
- 
- */
-
+/*Copyright (c) 2011—2017. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
 #include "gmres_precond.h"
 
 static int latency_count=0;
@@ -42,8 +22,8 @@ PetscErrorCode GmresLSAPrecond(com_lsa * com, KSP ksp)
   char  ls_load_path[PETSC_MAX_PATH_LEN];
   PetscBool ls_load, ls_load_any;
 
-  ierr=PetscOptionsGetString(PETSC_NULL,"-ksp_ls_load",ls_load_path,PETSC_MAX_PATH_LEN,&ls_load);CHKERRQ(ierr);
-  ierr=PetscOptionsHasName(PETSC_NULL,"-ksp_ls_load_any",&ls_load_any);CHKERRQ(ierr);
+  ierr=PetscOptionsGetString(NULL,PETSC_NULL,"-ksp_ls_load",ls_load_path,PETSC_MAX_PATH_LEN,&ls_load);CHKERRQ(ierr);
+  ierr=PetscOptionsHasName(NULL,PETSC_NULL,"-ksp_ls_load_any",&ls_load_any);CHKERRQ(ierr);
 
   if(ls_load&&ls_load_any){
 	  ls_load_any=PETSC_FALSE;
@@ -55,15 +35,15 @@ PetscErrorCode GmresLSAPrecond(com_lsa * com, KSP ksp)
 
   PetscFunctionBegin;
 
-  ierr=PetscOptionsGetInt(PETSC_NULL,"-ksp_ls_power",&ls_power,&flag);CHKERRQ(ierr);
+  ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_power",&ls_power,&flag);CHKERRQ(ierr);
   if(!flag) ls_power=LS_POWER;
-  ierr=PetscOptionsGetInt(PETSC_NULL,"-ksp_ls_latency",&latency,&flag);CHKERRQ(ierr);
+  ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_latency",&latency,&flag);CHKERRQ(ierr);
   if(!flag) latency=LS_LATENCY;
-  ierr=PetscOptionsGetInt(PETSC_NULL,"-ksp_ls_m_hang",&hang,&flag);CHKERRQ(ierr);
+  ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_m_hang",&hang,&flag);CHKERRQ(ierr);
   if(!flag) hang=ksp->max_it;
-  ierr=PetscOptionsGetInt(PETSC_NULL,"-ksp_ls_nopc",&nols,&flag);CHKERRQ(ierr);
+  ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_nopc",&nols,&flag);CHKERRQ(ierr);
   if(!flag) nols=1;
-  ierr=PetscOptionsGetInt(PETSC_NULL,"-ksp_ls_timing",&timing,&flag);CHKERRQ(ierr);
+  ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_timing",&timing,&flag);CHKERRQ(ierr);
   if(!flag) timing=1000000;
 
   latency_count++;
