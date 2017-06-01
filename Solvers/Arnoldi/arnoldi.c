@@ -35,9 +35,9 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	PetscReal re,im,vnorm;
 	PetscInt eigen_nb,j,i,size, taille;
 	uintptr_t one=1;
-	Vec initialv,nullv,*vs;
+	Vec initialv,nullv;
 	PetscBool flag,data_load,data_export,continuous_export,load_any;
-	int exit_type=0, counter = 0, l;
+	int exit_type=0;
 	int sos_type = 911;
 	Vec vecteur_initial;
 	PetscViewer viewer;
@@ -68,7 +68,8 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	/* create the eigensolver */
 	ierr=EPSCreate(PETSC_COMM_WORLD,&eps);CHKERRQ(ierr);
 	/* set the matrix operator */
-	ierr=EPSSetOperators(eps,*A,PETSC_NULL);
+	ierr=EPSSetOperators(eps,*A,PETSC_NULL);CHKERRQ(ierr);
+	ierr=EPSSetProblemType(eps, EPS_NHEP);CHKERRQ(ierr);
 	/* set options */
 	ierr=EPSSetType(eps,EPSARNOLDI);
 	ierr=EPSSetFromOptions(eps);CHKERRQ(ierr);
@@ -88,10 +89,6 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	ierr=PetscOptionsHasName(PETSC_NULL,"-ksp_arnoldi_load_any",&load_any);CHKERRQ(ierr);
 	ierr=PetscOptionsHasName(PETSC_NULL,"-ksp_arnoldi_cexport",&continuous_export);CHKERRQ(ierr);
 
-	vs=malloc(size*sizeof(Vec));
-	for(i=0;i<size;i++){
-		ierr=VecDuplicate(*v,&vs[i]);CHKERRQ(ierr);
-	}
 	ierr=VecDuplicate(initialv,&vecteur_initial);CHKERRQ(ierr);
 
 	while(!end){
@@ -120,7 +117,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		  data_load=PETSC_TRUE;
 		}
 		ierr = VecAssemblyBegin(initialv);CHKERRQ(ierr);
-  	ierr = VecAssemblyEnd(initialv);CHKERRQ(ierr);
+  		ierr = VecAssemblyEnd(initialv);CHKERRQ(ierr);
 
 		if(!(data_load^=load_any)){
 		  ierr=EPSSetInitialSpace(eps,1,&initialv);CHKERRQ(ierr);
@@ -131,9 +128,6 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 			ierr=EPSSetInitialSpace(eps,1,&initialv);CHKERRQ(ierr);
 		}
 		ierr=EPSSolve(eps);CHKERRQ(ierr);
-		/*construct new initial vector*/
-		ierr=EPSGetInvariantSubspace(eps, vs);CHKERRQ(ierr);
-		++counter;
 		/* get the number of guessed eigenvalues */
 		ierr=EPSGetConverged(eps,&eigen_nb);CHKERRQ(ierr);
 		/* send them */
@@ -150,19 +144,6 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		}
 		if( eigen_nb != 0){
 			mpi_lsa_com_array_send(com, &eigen_nb, eigenvalues);
-			/*construct new initial vector*/
-			ierr=VecCopy(vs[0],initialv);CHKERRQ(ierr);
-
-			for(j=1;j<eigen_nb;j++){
-				ierr=VecAYPX(initialv,(PetscScalar)1.0,vs[j]);
-			}
-
-			ierr=VecNorm(initialv,NORM_2,&vnorm);CHKERRQ(ierr);
-			ierr=VecAYPX(initialv,(PetscScalar)(1.0/vnorm),nullv);CHKERRQ(ierr);
-
-	  	if(continuous_export){
-		  	ierr=writeBinaryVecArray(data_export?export_path:"./arnoldi.bin", 1, &initialv);
-			}
 			if(!mpi_lsa_com_type_recv(com,&exit_type)){
    			if(exit_type==666){
 		 			end=1;
@@ -172,33 +153,11 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 					break;
   				}
 			}
-  	}else{
-  		need_new_init = PETSC_TRUE;
- 			while(need_new_init){
-				 if(!mpi_lsa_com_vec_recv(com, &initialv)){
-					 need_new_init = PETSC_FALSE;
-		     }else{
-		       if(!mpi_lsa_com_type_recv(com,&exit_type)){
-			     		if(exit_type==666){
-				    		end=1;
-				    		mpi_lsa_com_type_send(com,&exit_type);
-				    		need_new_init = PETSC_FALSE;
-				    		exit = PETSC_TRUE;
-				   			break;
-				  		}
-					 }
-      	}
-		  }
-		  if(exit == PETSC_TRUE)
-		     break;
   	}
 	}
 
 if(data_export){
 	ierr=writeBinaryVecArray(export_path, 1, &initialv);
-}
-for(i=0;i<eigen_nb;i++){
-	ierr=VecDestroy(&(vs[i]));CHKERRQ(ierr);
 }
 /* and destroy the eps */
 ierr=EPSDestroy(&eps);CHKERRQ(ierr);
