@@ -14,7 +14,7 @@ PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int * communicator){
 	ierr=PetscOptionsGetString(NULL,PETSC_NULL,"-mfile",filea,PETSC_MAX_PATH_LEN-1,&flaga);CHKERRQ(ierr);
 	if (!flaga) {
 		sprintf(err,"Error : mfile is not properly set -> %s\n",filea);
-		SETERRQ(*communicator,(PetscErrorCode) 83,err);
+//		SETERRQ(*communicator,(PetscErrorCode) 83,err);
 	}
 	/* read matrix file */
 	PetscPrintf(PETSC_COMM_WORLD,"Loading Matrix : %s\n",filea);

@@ -14,6 +14,7 @@ int main(int argc, char ** argv){
 	PetscErrorCode ierr;
 	PetscInt nols;
 	PetscBool flag;
+	int	non_lsa, size, rank;
 	char  tmp_path[PETSC_MAX_PATH_LEN];
 	char cCurrentPath[FILENAME_MAX];
 	char path[FILENAME_MAX];
@@ -21,12 +22,20 @@ int main(int argc, char ** argv){
 	mode_t process_mask = umask(0);
 	/* init of MPI and MPI Utils */
 	MPI_Init(&argc,&argv);
-	mpi_lsa_init(argc,argv,&com);
+  //      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+//	MPI_Comm_size(MPI_COMM_WORLD, &size);
+//	PetscPrintf("MPI WORLD SIZE = %d \n", size);
+	non_lsa = mpi_lsa_init(argc,argv,&com);
 	MPI_Barrier(MPI_COMM_WORLD);
+	ierr=SlepcInitialize(&argc,&argv,(char *)0,help);       CHKERRQ(ierr);
+        MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+        MPI_Comm_size(PETSC_COMM_WORLD, &size);	
+        PetscPrintf(PETSC_COMM_WORLD,"MPI WORLD SIZE = %d \n", size);
+	if(!non_lsa){
 
 	/* Launch PETSc */
 	PETSC_COMM_WORLD=com.com_group; // give group communicator as main petsc communicator
-	ierr=SlepcInitialize(&argc,&argv,(char *)0,help);	CHKERRQ(ierr);
+//	ierr=SlepcInitialize(&argc,&argv,(char *)0,help);	CHKERRQ(ierr);
 
 //	PetscPrintf(com.com_world,"]> Initializing PETSc/SLEPc\n");
 
@@ -81,23 +90,34 @@ int main(int argc, char ** argv){
 		LSQR(&com,&vsize);
 	}
 
-	/* end of the programm, deallocate structures and arrays */
- 	MPI_Barrier(MPI_COMM_WORLD);
-	VecDestroy(&v);
-	MatDestroy(&A);
+        MPI_Barrier(MPI_COMM_WORLD);
+        VecDestroy(&v);
+        MatDestroy(&A);
 
-	/* free petsc arrays before finalizing slepc */
-	PetscFree(com.in_received_buffer);
-	PetscFree(com.out_sended_buffer);
-	PetscFree(com.array_out_sended_buffer);
-	PetscFree(com.array_in_received_buffer);
+        /* free petsc arrays before finalizing slepc */
+        PetscFree(com.in_received_buffer);
+        PetscFree(com.out_sended_buffer);
+        PetscFree(com.array_out_sended_buffer);
+        PetscFree(com.array_in_received_buffer);
+        MPI_Barrier(MPI_COMM_WORLD); //wait for all
+        SlepcFinalize(); //finalize petsc
+        /* destroy communicators */
+        mpi_lsa_com_free(&com);
+	
+	}
+	else{
+//        ierr=SlepcInitialize(&argc,&argv,(char *)0,help);CHKERRQ(ierr);
+//        ierr=PetscInitialize(&argc,&argv,(char *)0,help);CHKERRQ(ierr);
+	read_matrix_vector(&A, &v,PETSC_COMM_WORLD);
+	classicalGMRES(&v, &A);
+        MPI_Barrier(MPI_COMM_WORLD);
+        VecDestroy(&v);
+        MatDestroy(&A);
+        MPI_Barrier(MPI_COMM_WORLD); //wait for all
+        SlepcFinalize(); //finalize petsc
 
-	/* free communicators and finalize */
-	MPI_Barrier(MPI_COMM_WORLD); //wait for all
-	SlepcFinalize(); //finalize petsc
-	/* destroy communicators */
-	mpi_lsa_com_free(&com);
-
+	}
+	
 	MPI_Finalize(); //finalize
 
 	return 0;
