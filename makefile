@@ -46,12 +46,13 @@ MAT = utm300.mtx_300x300_3155nnz
 NTIMES = 1
 #################       MPI Flags        ########################
 
-GMRES_NB_NODES=1
+GMRES_NB_NODES=2
 ARNOLDI_NB_NODES=1
 MPI_NODES = ${shell echo ${GMRES_NB_NODES}+${ARNOLDI_NB_NODES}+ 2 | bc}
 LSA_GMRES =-lsa_gmres
 LSA_ARNOLDI=-lsa_arnoldi
-#classical GMRES flags
+
+#classical GMRES MPI flags
 #MPI_NODES = 1
 #################       GMRES Flags       ########################
 
@@ -70,7 +71,7 @@ ARNOLDI_NBEIGEN= 10
 #ARNOLDI_MONITOR = -eps_monitor_conv
 
 ARNOLDI_FLAGS= -eps_ncv 100 -eps_type arnoldi -eps_true_residual -eps_largest_imaginary -eps_nev ${ARNOLDI_NBEIGEN} -eps_tol ${ARNOLDI_PRECISION} \
-                ${ARNOLDI_MONITOR} ${LS_ARNOLDI} ${ARNOLDI_NB_NODES} -eps_max_it 50
+                ${ARNOLDI_MONITOR} ${LSA_ARNOLDI} ${ARNOLDI_NB_NODES} -eps_max_it 50
 #################       LS Flags           ########################
 
 LS_POWER = 10
@@ -80,14 +81,13 @@ LS_PC_USE =1
 LS_NO_USE_LS= -ksp_ls_nols
 LS_HANG_IT= 20000
 LS_HANG_TIME=  100000
-# LS_LOAD_ANY = -ksp_ls_load_any
+#################    LS Reusability Flags  ########################
 
-#LS_FLAGS = -ksp_ls_power ${LS_POWER} ${LS_NO_USE_LS}-ksp_ls_m_hang ${LS_HANG_IT} -ksp_ls_timing ${LS_HANG_TIME}  -ksp_ls_k_param ${LS_POLY_APPL} -ksp_ls_nopc ${LS_PC_USE} -ksp_ls_latency ${LS_LATENCY} -ksp_ls_cexport
+#LS_CEXPORT = -ksp_ls_cexport
+#LS_LOAD = -ksp_ls_load
+#LS_LOAD_FILE = ./lsqr.bin
 
-#LS_FLAGS = -ksp_ls_power ${LS_POWER} ${LS_NO_USE_LS}-ksp_ls_m_hang ${LS_HANG_IT} -ksp_ls_timing ${LS_HANG_TIME}  -ksp_ls_k_param ${LS_POLY_APPL} -ksp_ls_nopc ${LS_PC_USE} -ksp_ls_latency ${LS_LATENCY} -ksp_ls_load ./lsqr.bin
-
-LS_FLAGS = -ksp_ls_power ${LS_POWER} ${LS_NO_USE_LS}-ksp_ls_m_hang ${LS_HANG_IT} -ksp_ls_timing ${LS_HANG_TIME}  -ksp_ls_k_param ${LS_POLY_APPL} -ksp_ls_nopc ${LS_PC_USE} -ksp_ls_latency ${LS_LATENCY}
-
+LS_FLAGS = -ksp_ls_power ${LS_POWER} ${LS_NO_USE_LS}-ksp_ls_m_hang ${LS_HANG_IT} -ksp_ls_timing ${LS_HANG_TIME}  -ksp_ls_k_param ${LS_POLY_APPL} -ksp_ls_nopc ${LS_PC_USE} -ksp_ls_latency ${LS_LATENCY} ${LS_CEXPORT} ${LS_LOAD} ${LS_LOAD_FILE}
 #################      Flags Combinations      #####################
 
 GLSA_FLAGS = ${GMRES_FLAGS} ${ARNOLDI_FLAGS} ${LS_FLAGS} ${DEBUG_KSP_VIEW} ${RUN_FLAGS}
