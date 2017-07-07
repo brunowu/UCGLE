@@ -35,40 +35,46 @@ MDIR=./data
 ##################      Solvers FLAGS      #######################
 ##################################################################
 
-#debug options
+#################       Debug flags    ########################
 
 #DEBUG_VALGRIND = valgrind --tool=memcheck -q
 #DEBUG_KSP_VIEW = -ksp_view
 
+#################       General Flags    ########################
+
 MAT = utm300.mtx_300x300_3155nnz
+NTIMES = 1
+#################       MPI Flags        ########################
+
+GMRES_NB_NODES=1
+ARNOLDI_NB_NODES=1
+MPI_NODES = ${shell echo ${GMRES_NB_NODES}+${ARNOLDI_NB_NODES}+ 2 | bc}
+LSA_GMRES =-lsa_gmres
+LSA_ARNOLDI=-lsa_arnoldi
+#classical GMRES flags
+#MPI_NODES = 1
+#################       GMRES Flags       ########################
+
 RESTART_MAX = 150
 GMRES_PRECISION= 1e-10
 GMRES_RESTART= ${RESTART_MAX}
-GMRES_NB_NODES=1
 GMRES_MONITOR= -ksp_monitor_true_residual
-NTIMES = 1
 
 GMRES_FLAGS= -ksp_rtol 1e-100 -ksp_divtol 1e1000 -ksp_max_it 20000 -pc_type none -ksp_atol ${GMRES_PRECISION} -ksp_gmres_restart ${GMRES_RESTART}\
-		${GMRES_MONITOR} -lsa_gmres ${GMRES_NB_NODES} -ntimes ${NTIMES} \
+		${GMRES_MONITOR} ${LSA_GMRES} ${GMRES_NB_NODES} -ntimes ${NTIMES} \
 		#-log_summary
+#################       ERAM Flags         ########################
 
-#GMRES_FLAGS= -ksp_rtol 1e-100 -ksp_divtol 1e1000 -ksp_max_it 20000 -pc_type none -ksp_atol ${GMRES_PRECISION} -ksp_gmres_restart ${GMRES_RESTART}\
-                ${GMRES_MONITOR} -ntimes ${NTIMES}
-
-#arnoldi options
 ARNOLDI_PRECISION= 1e-1
 ARNOLDI_NBEIGEN= 10
-ARNOLDI_NB_NODES=3
 #ARNOLDI_MONITOR = -eps_monitor_conv
-ARNOLDI_FLAGS= -eps_ncv 100 -eps_type arnoldi -eps_true_residual -eps_largest_imaginary -eps_nev ${ARNOLDI_NBEIGEN} -eps_tol ${ARNOLDI_PRECISION} \
-                ${ARNOLDI_MONITOR} -lsa_arnoldi ${ARNOLDI_NB_NODES} -eps_max_it 50
 
-#ls options
-FATHER_NB_NDOES = 1	
-LS_NB_NODES = 1
+ARNOLDI_FLAGS= -eps_ncv 100 -eps_type arnoldi -eps_true_residual -eps_largest_imaginary -eps_nev ${ARNOLDI_NBEIGEN} -eps_tol ${ARNOLDI_PRECISION} \
+                ${ARNOLDI_MONITOR} ${LS_ARNOLDI} ${ARNOLDI_NB_NODES} -eps_max_it 50
+#################       LS Flags           ########################
 
 LS_POWER = 10
-LS_POLY_APPL = 5
+LS_POLY_APPL = 10
 LS_LATENCY=1
 LS_PC_USE =1
 LS_NO_USE_LS= -ksp_ls_nols
@@ -82,18 +88,13 @@ LS_HANG_TIME=  100000
 
 LS_FLAGS = -ksp_ls_power ${LS_POWER} ${LS_NO_USE_LS}-ksp_ls_m_hang ${LS_HANG_IT} -ksp_ls_timing ${LS_HANG_TIME}  -ksp_ls_k_param ${LS_POLY_APPL} -ksp_ls_nopc ${LS_PC_USE} -ksp_ls_latency ${LS_LATENCY}
 
-#final flag composition  ${DEBUGG}
+#################      Flags Combinations      #####################
 
 GLSA_FLAGS = ${GMRES_FLAGS} ${ARNOLDI_FLAGS} ${LS_FLAGS} ${DEBUG_KSP_VIEW} ${RUN_FLAGS}
-MPI_NODES = ${shell echo ${GMRES_NB_NODES}+${ARNOLDI_NB_NODES}+ ${FATHER_NB_NDOES} + ${LS_NB_NODES} | bc}
-
-
 
 ##################################################################
 ##################   Compilation rules     #######################
 ##################################################################
-
-
 
 include ${PETSC_DIR}/lib/petsc/conf/variables
 include ${PETSC_DIR}/lib/petsc/conf/rules

@@ -36,12 +36,12 @@ PetscErrorCode classicalGMRES(Vec * b, Mat * A){
 		if(i==1){
 			VecCopy(*b,c);
 			VecNorm(c, NORM_2,&norm);
-			VecScale(c, 1/norm);
+			VecScale(c, 0.01/norm);
 		}
 		else{
 			generate_random_seed_vector(size, -10,10, i,&c);
 			VecNorm(c, NORM_2,&norm);
-			VecScale(c, 1/norm);
+			VecScale(c, 0.01/norm);
 		}
 		start=clock();
 		ierr = KSPSolve(ksp, c, x); CHKERRQ(ierr);
