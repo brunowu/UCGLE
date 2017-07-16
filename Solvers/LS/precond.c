@@ -88,15 +88,18 @@ PetscErrorCode LSPrecond(PetscReal a_ell, PetscReal d_ell, PetscReal c_ell,
 			}
 		}
 	}
+
 	MatCreateSeqDense(PETSC_COMM_WORLD,(*nb_eigen_all)+1,(*nb_eigen_all)+1,PETSC_NULL,&MM);
-	MatSetFromOptions(MM);
+
 	/* Filling of the lower triangular part */
+
 	for(j=0;j<=*nb_eigen_all;j++){
 		for(i=0;i<=j;i++){
 			MatSetValue(MM,i,j,(PetscReal)mm_tmp[i][j],INSERT_VALUES);
 			MatSetValue(MM,j,i,(PetscReal)mm_tmp[i][j],INSERT_VALUES);
 		}
 	}
+
 	MatAssemblyBegin(MM,MAT_FINAL_ASSEMBLY);
 	MatAssemblyEnd(MM,MAT_FINAL_ASSEMBLY);
 

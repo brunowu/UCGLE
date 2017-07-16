@@ -46,7 +46,7 @@ MAT = utm300.mtx_300x300_3155nnz
 NTIMES = 1
 #################       MPI Flags        ########################
 
-GMRES_NB_NODES=2
+GMRES_NB_NODES=1
 ARNOLDI_NB_NODES=1
 MPI_NODES = ${shell echo ${GMRES_NB_NODES}+${ARNOLDI_NB_NODES}+ 2 | bc}
 LSA_GMRES =-lsa_gmres
@@ -59,11 +59,12 @@ LSA_ARNOLDI=-lsa_arnoldi
 RESTART_MAX = 150
 GMRES_PRECISION= 1e-10
 GMRES_RESTART= ${RESTART_MAX}
-GMRES_MONITOR= -ksp_monitor_true_residual
+#GMRES_MONITOR= -ksp_monitor_true_residual
+CUDA_TYPE = -mat_type aijcusparse -vec_type cuda
 
 GMRES_FLAGS= -ksp_rtol 1e-100 -ksp_divtol 1e1000 -ksp_max_it 20000 -pc_type none -ksp_atol ${GMRES_PRECISION} -ksp_gmres_restart ${GMRES_RESTART}\
-		${GMRES_MONITOR} ${LSA_GMRES} ${GMRES_NB_NODES} -ntimes ${NTIMES} \
-		#-log_summary
+		${GMRES_MONITOR} ${LSA_GMRES} ${GMRES_NB_NODES} -ntimes ${NTIMES} ${CUDA_TYPE}\
+		-log_view
 #################       ERAM Flags         ########################
 
 ARNOLDI_PRECISION= 1e-1
