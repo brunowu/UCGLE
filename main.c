@@ -8,18 +8,13 @@ static const char help[] = "Solve";
 
 int main(int argc, char ** argv){
 	com_lsa com;
-	int result_code,vsize;
+	int vsize;
 	Mat A,Af; 	
 	Vec v,vf;
 	PetscErrorCode ierr;
 	PetscInt nols;
 	PetscBool flag;
 	int	non_lsa, size, rank;
-	char  tmp_path[PETSC_MAX_PATH_LEN];
-	char cCurrentPath[FILENAME_MAX];
-	char path[FILENAME_MAX];
-	
-	mode_t process_mask = umask(0);
 	/* init of MPI and MPI Utils */
 	MPI_Init(&argc,&argv);
   //      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
