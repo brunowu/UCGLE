@@ -21,7 +21,7 @@ ALL:  blib exec
 #compilation flags
 DIRS    = Libs Tuning Solvers
 EXEC    = hyperh
-CFLAGS	= -O0
+CFLAGS	= -O0 -O3
 #-I${PETSC_DIR}/src/ksp/ksp/impls/gmres/fgmres/
 
 CLEANFILES  = ${EXEC}
@@ -41,38 +41,61 @@ MDIR=./data
 #DEBUG_KSP_VIEW = -ksp_view
 
 #################       General Flags    ########################
-
+#MAT = EBMG_matrix_nb_200000_200000x200000_1.41977e+07_nnz
+#MAT = EBMG_matrix_nb_400000_400000x400000_2.83976e+07_nnz
+#MAT = EBMG_matrix_nb_800000_800000x800000_5.67979e+07_nnz
+#MAT = EBMG_matrix_nb_1600000_1600000x1600000_1.13598e+08_nnz
+#MAT = Eigen_known_matrix_nb_500_500x500_40425_nnz
+#MAT = EDMG_matrix_nb_500_500x500_40419_nnz
+#MAT = EBMG_matrix_nb_500_500x500_33039_nnz
+#MAT = EBMG_matrix_nb_500_500x500_33063_nnz
+#MAT = EBMG_matrix_nb_500_500x500_33098_nnz
+#MAT = EBMG_matrix_nb_500_500x500_33036_nnz
+#MAT = matline_nb_6_1800x1800_19216_nnz
+#MAT = matline_nb_6_1800x1800_18933_nnzK
 MAT = utm300.mtx_300x300_3155nnz
+#MAT = matline_nb_3_900x900_9468_nnz
+#MAT = matblock_nb_3_900x900_15775_nnz
 NTIMES = 1
 #################       MPI Flags        ########################
 
 GMRES_NB_NODES=1
 ARNOLDI_NB_NODES=1
+
 MPI_NODES = ${shell echo ${GMRES_NB_NODES}+${ARNOLDI_NB_NODES}+ 2 | bc}
 LSA_GMRES =-lsa_gmres
 LSA_ARNOLDI=-lsa_arnoldi
 
 #classical GMRES MPI flags
-#MPI_NODES = 1
+#MPI_NODES = 2
 #################       GMRES Flags       ########################
 
-RESTART_MAX = 150
+RESTART_MAX =150
 GMRES_PRECISION= 1e-10
 GMRES_RESTART= ${RESTART_MAX}
-#GMRES_MONITOR= -ksp_monitor_true_residual
-CUDA_TYPE = -mat_type aijcusparse -vec_type cuda
-
-GMRES_FLAGS= -ksp_rtol 1e-100 -ksp_divtol 1e1000 -ksp_max_it 20000 -pc_type none -ksp_atol ${GMRES_PRECISION} -ksp_gmres_restart ${GMRES_RESTART}\
+GMRES_MONITOR= -ksp_monitor_true_residual
+KSP_MAX_ITS = 20000
+PC_TYPE = none
+#PC_TYPE=jacobi -pc_jacobi_type rowmax -pc_jacobi_abs
+#PC_TYPE = asm -pc_asm_block 2 -pc_asm_type none
+#PC_TYPE = sor -pc_sor_its 5 -pc_sor_omega 0.179
+#CUDA_TYPE = -mat_type aijcusparse -vec_type cuda
+#GMRES_FT = -GMRES_FT
+GMRES_FLAGS= -ksp_rtol 1e-100 -ksp_divtol 1e1000 -ksp_max_it ${KSP_MAX_ITS} -pc_type ${PC_TYPE} -ksp_atol ${GMRES_PRECISION} -ksp_gmres_restart ${GMRES_RESTART}\
 		${GMRES_MONITOR} ${LSA_GMRES} ${GMRES_NB_NODES} -ntimes ${NTIMES} ${CUDA_TYPE}\
-		-log_view
+		${GMRES_FT}
+#		-log_view
+
 #################       ERAM Flags         ########################
 
 ARNOLDI_PRECISION= 1e-1
-ARNOLDI_NBEIGEN= 10
+ARNOLDI_NBEIGEN=3
 #ARNOLDI_MONITOR = -eps_monitor_conv
+#ARNOLDI_FT_SIM = -ArnoldiFT 4
 
 ARNOLDI_FLAGS= -eps_ncv 100 -eps_type arnoldi -eps_true_residual -eps_largest_imaginary -eps_nev ${ARNOLDI_NBEIGEN} -eps_tol ${ARNOLDI_PRECISION} \
-                ${ARNOLDI_MONITOR} ${LSA_ARNOLDI} ${ARNOLDI_NB_NODES} -eps_max_it 50
+                ${ARNOLDI_MONITOR} ${LSA_ARNOLDI} ${ARNOLDI_NB_NODES} -eps_max_it 50 \
+		${ARNOLDI_FT_SIM} 
 #################       LS Flags           ########################
 
 LS_POWER = 10

@@ -13,7 +13,7 @@ int main(int argc, char ** argv){
 	Vec v,vf;
 	PetscErrorCode ierr;
 	PetscInt nols;
-	PetscBool flag;
+	PetscBool flag, gft_flg;
 	int	non_lsa, size, rank;
 	/* init of MPI and MPI Utils */
 	MPI_Init(&argc,&argv);
@@ -69,20 +69,48 @@ int main(int argc, char ** argv){
 	ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_nopc",&nols,&flag);CHKERRQ(ierr);
 	if(!flag) nols=1;
 	else if(nols==0) PetscPrintf(com.com_world,"]> not using LSA preconditionning %d\n",nols);
+	
+	PetscOptionsHasName(NULL,NULL,"-GMRES_FT",&gft_flg);
+	if(!gft_flg)
+	{
 
-	if(com.color_group==GMRES_GR){
-		PetscPrintf(com.com_group,"]> Launching GMRES\n");
-		launchGMRES(&com, &v, &A);
-	}else if(com.color_group==ARNOLDI_GR && nols!=0){
-		PetscPrintf(com.com_group,"]> Launching Arnoldi\n");
-		Arnoldi(&com,&A,&v)	;
-	}	else if(com.color_group==FATHER_GR && nols!=0){
-		PetscPrintf(com.com_group,"]> Launching Father\n");
-		Father(&com,&v);
-	} else if(com.color_group==LS_GR && nols!=0){
-		VecGetSize(v,&vsize);
-		PetscPrintf(com.com_group,"]> Launching LS\n");
-		LSQR(&com,&vsize);
+		if(com.color_group==GMRES_GR){
+			PetscPrintf(com.com_group,"]> Launching GMRES\n");
+			launchGMRES(&com, &v, &A);
+		}else if(com.color_group==ARNOLDI_GR && nols!=0){
+			PetscPrintf(com.com_group,"]> Launching Arnoldi\n");
+			Arnoldi(&com,&A,&v)	;
+			}
+		else if(com.color_group==FATHER_GR && nols!=0){
+			PetscPrintf(com.com_group,"]> Launching Father\n");
+			Father(&com,&v);
+		} else if(com.color_group==LS_GR && nols!=0){
+			VecGetSize(v,&vsize);
+			PetscPrintf(com.com_group,"]> Launching LS\n");
+			LSQR(&com,&vsize);
+		}
+
+	}
+	else{
+
+
+               if(com.color_group==GMRES_GR){
+                        PetscPrintf(com.com_group,"]> Launching GMRES\n");
+                 //       launchGMRES(&com, &v, &A);
+                }else if(com.color_group==ARNOLDI_GR && nols!=0){
+                        PetscPrintf(com.com_group,"]> Launching Arnoldi\n");
+                        launchGMRES(&com, &v, &A);
+                        }
+                else if(com.color_group==FATHER_GR && nols!=0){
+                        PetscPrintf(com.com_group,"]> Launching Father\n");
+                        Father(&com,&v);
+                } else if(com.color_group==LS_GR && nols!=0){
+                        VecGetSize(v,&vsize);
+                        PetscPrintf(com.com_group,"]> Launching LS\n");
+                        LSQR(&com,&vsize);
+                }
+
+
 	}
 
         MPI_Barrier(MPI_COMM_WORLD);
