@@ -96,6 +96,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		  }
 		}
 	
+
 		if(!mpi_lsa_com_vec_recv(com, &initialv)){
 				VecGetSize(initialv, &taille);
 		}
@@ -111,6 +112,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		ierr = VecAssemblyBegin(initialv);CHKERRQ(ierr);
 	  	ierr = VecAssemblyEnd(initialv);CHKERRQ(ierr);
 
+		if(count <= aft){
 		if(!(data_load^=load_any)){
 		  ierr=EPSSetInitialSpace(eps,1,&initialv);CHKERRQ(ierr);
 		} else {
@@ -119,7 +121,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 			load_any=PETSC_FALSE;
 			ierr=EPSSetInitialSpace(eps,1,&initialv);CHKERRQ(ierr);
 		}
-		if(count <= aft){	
+		
 		ierr=EPSSolve(eps);CHKERRQ(ierr);
 		
 		ierr=EPSGetConverged(eps,&eigen_nb);CHKERRQ(ierr);
