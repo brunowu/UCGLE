@@ -15,11 +15,12 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	PetscInt eigen_nb,j,i,size, taille;
 	uintptr_t one=1;
 	Vec initialv,nullv;
-	PetscBool flag,data_load,data_export,continuous_export,load_any;
+	PetscBool flag,data_load,data_export,continuous_export,load_any, aft_flg;
 	int exit_type=0;
 	int sos_type = 911;
 	Vec vecteur_initial;
 	PetscViewer viewer;
+	PetscInt aft, count=0;
 
 	char  ls_load_path[PETSC_MAX_PATH_LEN];
 	PetscBool ls_load, ls_load_any;
@@ -37,6 +38,11 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	first=1;
 	validated=1;
 
+        PetscOptionsGetInt(NULL,NULL,"-ArnoldiFT",&aft,&aft_flg);
+
+        if(!aft_flg){
+                aft = 20000;
+        }
  if(!(ls_load^=ls_load_any)){
 
 	sprintf(load_path,"./arnoldi.bin");
@@ -70,7 +76,14 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	 
 	ierr=VecDuplicate(initialv,&vecteur_initial);CHKERRQ(ierr);
 
+//	PetscOptionsGetInt(NULL,NULL,"-ArnoldiFT",&aft,&aft_flg);
+
+//	if(!aft_flg){
+//		aft = 20000;
+//	}
+
 	while(!end){
+		count ++;
 		/*check if the program need to exit */
 		if(exit == PETSC_TRUE)
 			break;
@@ -82,7 +95,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		    break;
 		  }
 		}
-		/* check if we received some data from GMRES		*/
+	
 		if(!mpi_lsa_com_vec_recv(com, &initialv)){
 				VecGetSize(initialv, &taille);
 		}
@@ -96,7 +109,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		  data_load=PETSC_TRUE;
 		}
 		ierr = VecAssemblyBegin(initialv);CHKERRQ(ierr);
-  	ierr = VecAssemblyEnd(initialv);CHKERRQ(ierr);
+	  	ierr = VecAssemblyEnd(initialv);CHKERRQ(ierr);
 
 		if(!(data_load^=load_any)){
 		  ierr=EPSSetInitialSpace(eps,1,&initialv);CHKERRQ(ierr);
@@ -106,10 +119,11 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 			load_any=PETSC_FALSE;
 			ierr=EPSSetInitialSpace(eps,1,&initialv);CHKERRQ(ierr);
 		}
+		if(count <= aft){	
 		ierr=EPSSolve(eps);CHKERRQ(ierr);
-		/* get the number of guessed eigenvalues */
+		
 		ierr=EPSGetConverged(eps,&eigen_nb);CHKERRQ(ierr);
-		/* send them */
+		
 		for(j=0;j<eigen_nb;j++){
 			ierr = EPSGetEigenvalue(eps,j,&er,&ei);CHKERRQ(ierr);
 			#ifdef PETSC_USE_COMPLEX
@@ -133,10 +147,13 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
   				}
 			}
   	}
+}
+
 	}
 
 if(data_export){
 	ierr=writeBinaryVecArray(export_path, 1, &initialv);
+
 }
 /* and destroy the eps */
 ierr=EPSDestroy(&eps);CHKERRQ(ierr);
