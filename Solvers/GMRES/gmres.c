@@ -8,11 +8,13 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 	KSPConvergedReason reason;
 	PetscInt its, nols, ntimes;
 	int i, size;
-	PetscBool flagls, flagtimes;
+	PetscBool flagls, flagtimes, gft_flg;
 	double cost_time;
 	clock_t start, end;
 
 	PetscReal norm;
+	PetscOptionsHasName(NULL,NULL,"-GMRES_FT",&gft_flg);
+	
 	VecGetSize(*b, &size);
 	VecDuplicate(*b, &c);
         PetscPrintf(com->com_group,"#} GMRES Creating and setting vector x\n");
@@ -25,7 +27,7 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 //	KSPSetInitialGuessNonzero(ksp, PETSC_TRUE);
 	ierr = KSPSetOperators(ksp, *A, *A);CHKERRQ(ierr);
 	ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
-
+        KSPSetInitialGuessNonzero(ksp, PETSC_TRUE);
 	PetscOptionsGetInt(NULL,NULL,"-ntimes",&ntimes,&flagtimes);
 
 	if(!flagtimes){
@@ -35,8 +37,8 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 	for (i=1; i<=ntimes; i++) {
 		if(i==1){
 			VecCopy(*b,c);
-			VecNorm(c, NORM_2,&norm);
-			VecScale(c, 0.01/norm);
+//			VecNorm(c, NORM_2,&norm);
+//			VecScale(c, 0.01/norm);
 		}
 		else{
 			generate_random_seed_vector(size, -10,10, i,&c);
@@ -48,16 +50,24 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 		end=clock();
   		cost_time = (double)(end - start)/CLOCKS_PER_SEC;
 		KSPGetConvergedReason(ksp,&reason);
-		if (reason<0) {
+		if (reason<0 && !gft_flg) {
 			PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Divergence in acceptable iteration steps.\n", i);
+		}
+		else if(reason < 0 && gft_flg){
+			int gft = 999;
+			mpi_lsa_com_type_send(com,&gft);
+			PetscPrintf(PETSC_COMM_WORLD, "\nGMRES Simulated to be failure \n");
 		}
 		else {
 			KSPGetIterationNumber(ksp,&its);
 			PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Convergence in %f seconds / %d iterations. \n", i, cost_time, its);
+		
 		}
 	}
-	int exit_type=666;
-	mpi_lsa_com_type_send(com,&exit_type);
-	PetscPrintf(com->com_group,"\n\n#}Finish the resolution\n");
+
+			int exit_type=666;
+                        mpi_lsa_com_type_send(com,&exit_type);
+                        PetscPrintf(com->com_group,"\n\n#}Finish the resolution\n");
+
   	return ierr;
 }

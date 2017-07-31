@@ -157,7 +157,16 @@ PetscErrorCode GmresLSAPrecond(com_lsa * com, KSP ksp)
     VecNorm(r1_tmp,NORM_2,&norm);
   }
 
-  if(nols!=0) ierr=VecCopy(sol_tmp,ksp->vec_sol);CHKERRQ(ierr);
+
+  if(nols!=0) {
+	Vec vmp;
+
+	ierr=VecCopy(sol_tmp,ksp->vec_sol);CHKERRQ(ierr);
+	ierr = VecDuplicate(ksp->vec_sol,&vmp);CHKERRQ(ierr);
+	VecCopy(ksp->vec_sol,vmp);
+    	mpi_lsa_com_vec_send(com,&vmp);
+	}
+
   ierr=PetscFree(eta);CHKERRQ(ierr);
   ierr=PetscFree(beta);CHKERRQ(ierr);
   ierr=PetscFree(delta);CHKERRQ(ierr);

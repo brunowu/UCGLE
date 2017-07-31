@@ -63,7 +63,9 @@ PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 	ls_eigen=0;
 	while(!end){
 		if(!mpi_lsa_com_type_recv(com,&type)){
-		  if(type==666){
+		  if(type==666 || type == 999){
+
+		   PetscPrintf(PETSC_COMM_WORLD, "\nLSQR exit type = %d\n",type);
 		    end=1;
 		    break;
 		  }else if (type == 911){

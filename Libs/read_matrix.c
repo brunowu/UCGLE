@@ -10,6 +10,7 @@ PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int * communicator){
 	PetscViewer fd;
 	PetscInt size,sizea;
 	PetscScalar scal;
+	PetscReal vnorm;
 
 	ierr=PetscOptionsGetString(NULL,PETSC_NULL,"-mfile",filea,PETSC_MAX_PATH_LEN-1,&flaga);CHKERRQ(ierr);
 	if (!flaga) {
@@ -31,6 +32,8 @@ PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int * communicator){
 	if (!flagb) {
 		/* the user did not provide a vector, so generate it*/
 		generate_random_seed_vector(size, -10.0, 10.0, 0, v);
+		VecNorm(*v, NORM_2, &vnorm);
+		VecScale(*v, 0.01/vnorm);		
 		PetscPrintf(PETSC_COMM_WORLD,"Generated right hand side matrix b\n");		
 	} else {
 		PetscPrintf(PETSC_COMM_WORLD,"Loading Vector : %s\n",fileb);

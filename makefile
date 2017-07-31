@@ -74,13 +74,13 @@ RESTART_MAX =150
 GMRES_PRECISION= 1e-10
 GMRES_RESTART= ${RESTART_MAX}
 GMRES_MONITOR= -ksp_monitor_true_residual
-KSP_MAX_ITS = 20000
+KSP_MAX_ITS = 250
 PC_TYPE = none
 #PC_TYPE=jacobi -pc_jacobi_type rowmax -pc_jacobi_abs
 #PC_TYPE = asm -pc_asm_block 2 -pc_asm_type none
 #PC_TYPE = sor -pc_sor_its 5 -pc_sor_omega 0.179
 #CUDA_TYPE = -mat_type aijcusparse -vec_type cuda
-#GMRES_FT = -GMRES_FT
+GMRES_FT = -GMRES_FT
 GMRES_FLAGS= -ksp_rtol 1e-100 -ksp_divtol 1e1000 -ksp_max_it ${KSP_MAX_ITS} -pc_type ${PC_TYPE} -ksp_atol ${GMRES_PRECISION} -ksp_gmres_restart ${GMRES_RESTART}\
 		${GMRES_MONITOR} ${LSA_GMRES} ${GMRES_NB_NODES} -ntimes ${NTIMES} ${CUDA_TYPE}\
 		${GMRES_FT}
@@ -98,8 +98,8 @@ ARNOLDI_FLAGS= -eps_ncv 100 -eps_type arnoldi -eps_true_residual -eps_largest_im
 		${ARNOLDI_FT_SIM} 
 #################       LS Flags           ########################
 
-LS_POWER = 10
-LS_POLY_APPL = 10
+LS_POWER = 20
+LS_POLY_APPL = 20
 LS_LATENCY=1
 LS_PC_USE =1
 LS_NO_USE_LS= -ksp_ls_nols

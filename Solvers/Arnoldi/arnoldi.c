@@ -21,6 +21,11 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	Vec vecteur_initial;
 	PetscViewer viewer;
 	PetscInt aft, count=0;
+	KSP kspft;
+	KSPConvergedReason reason;
+	PetscInt its;
+
+	Vec sol_tmp;
 
 	char  ls_load_path[PETSC_MAX_PATH_LEN];
 	PetscBool ls_load, ls_load_any;
@@ -60,6 +65,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	ierr=EPSSetFromOptions(eps);CHKERRQ(ierr);
 	/* duplicate vector properties */
 	ierr=VecDuplicate(*v,&initialv);CHKERRQ(ierr);
+        ierr=VecDuplicate(*v,&sol_tmp);CHKERRQ(ierr);
 	ierr=VecDuplicate(*v,&nullv);CHKERRQ(ierr);
 	ierr=VecSet(nullv,(PetscScalar)0.0);CHKERRQ(ierr);
 
@@ -76,11 +82,6 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	 
 	ierr=VecDuplicate(initialv,&vecteur_initial);CHKERRQ(ierr);
 
-//	PetscOptionsGetInt(NULL,NULL,"-ArnoldiFT",&aft,&aft_flg);
-
-//	if(!aft_flg){
-//		aft = 20000;
-//	}
 
 	while(!end){
 		count ++;
@@ -94,13 +95,22 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		    mpi_lsa_com_type_send(com,&exit_type);
 		    break;
 		  }
-		}
-	
 
-		if(!mpi_lsa_com_vec_recv(com, &initialv)){
-				VecGetSize(initialv, &taille);
+		  if(exit_type=999){
+			end = 1;
+			mpi_lsa_com_type_send(com,&exit_type);
+			break;
+		  }
 		}
 
+		if(!mpi_lsa_com_vec_recv(com, &sol_tmp)){
+				VecGetSize(sol_tmp, &taille);
+		}
+
+		PetscReal nn;
+		VecNorm(sol_tmp, NORM_2,&nn);
+		PetscPrintf(PETSC_COMM_WORLD, "Arnoldi received tmp solution norm = %.13g\n",nn);
+		
 		for(j=0;j<eigen_nb;j++){
 			eigenvalues[j]=(PetscScalar)0.0;
 		}
@@ -116,7 +126,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		if(!(data_load^=load_any)){
 		  ierr=EPSSetInitialSpace(eps,1,&initialv);CHKERRQ(ierr);
 		} else {
-		  ierr=readBinaryVecArray(load_path,(int*)one,&initialv);CHKERRQ(ierr);
+			ierr=readBinaryVecArray(load_path,(int*)one,&initialv);CHKERRQ(ierr);
 			data_load=PETSC_FALSE;
 			load_any=PETSC_FALSE;
 			ierr=EPSSetInitialSpace(eps,1,&initialv);CHKERRQ(ierr);
@@ -147,11 +157,19 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		 			exit = PETSC_TRUE;
 					break;
   				}
-			}
+            if(exit_type=999){
+                    end = 1;
+                    mpi_lsa_com_type_send(com,&exit_type);
+                    break;
+            }
+		}
+
   	}
 }
 
-	}
+}
+
+PetscPrintf(PETSC_COMM_WORLD, "\n Arnodli exit type = %d\n",exit_type);
 
 if(data_export){
 	ierr=writeBinaryVecArray(export_path, 1, &initialv);
@@ -161,8 +179,35 @@ if(data_export){
 ierr=EPSDestroy(&eps);CHKERRQ(ierr);
 ierr=VecDestroy(&initialv);CHKERRQ(ierr);
 ierr=VecDestroy(&nullv);CHKERRQ(ierr);
-}
 
+
+if(exit_type == 999){
+	PetscPrintf(PETSC_COMM_WORLD, "\n Reset GMRES to Arnoldi\n",exit_type);
+	PetscViewer pcv;
+	ierr = KSPCreate(PETSC_COMM_WORLD, &kspft);CHKERRQ(ierr);
+	ierr = KSPSetType(kspft,KSPFGMRES);CHKERRQ(ierr);
+	ierr = KSPSetOperators(kspft, *A, *A);CHKERRQ(ierr);
+	ierr = KSPSetFromOptions(kspft);CHKERRQ(ierr);
+	KSPSetTolerances(kspft,1e-100,1e-10,1e100,20000);
+	KSPSetInitialGuessNonzero(kspft, PETSC_TRUE);
+	ierr = KSPSolve(kspft, *v, sol_tmp); CHKERRQ(ierr);
+
+	KSPGetConvergedReason(kspft,&reason);
+
+	if (reason<0) {
+			PetscPrintf(PETSC_COMM_WORLD,"\nResolution : Divergence in acceptable iteration steps.\n");
+		}
+		else {
+			KSPGetIterationNumber(kspft,&its);
+			PetscPrintf(PETSC_COMM_WORLD,"\nResolution : Convergence in %d iterations. \n",its);
+		}
+	/*
+	for(int mm=0; mm<10;mm++){
+			PetscPrintf(PETSC_COMM_WORLD, "\n mm = %d\n",mm);
+	}
+	*/
+}
+}
 else{
 	while(!end){
 		/*check if the program need to exit */
@@ -175,9 +220,14 @@ else{
 		    mpi_lsa_com_type_send(com,&exit_type);
 		    break;
 		  }
-		}
-   }
+        if(exit_type==999){
+            end=1;
+            mpi_lsa_com_type_send(com,&exit_type);
+            break;
+        }
 	}
+ }
+}
 
 
 return 0;

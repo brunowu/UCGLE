@@ -7,9 +7,9 @@
 
 #SBATCH --time=02:30:00
 
-#SBATCH -n 23
+#SBATCH -n 4
 
 
-make runa
+make runexec
 
 

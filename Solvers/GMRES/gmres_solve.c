@@ -56,8 +56,9 @@ PetscErrorCode MyKSPSolve_FGMRES(KSP ksp,com_lsa * com)
     ierr = MyKSPFGMRESResidual(ksp);CHKERRQ(ierr);
     if (ksp->its >= ksp->max_it) break;
     ierr = MyKSPFGMRESCycle(&cycle_its,ksp);CHKERRQ(ierr);
-    ierr = VecDuplicate(ksp->vec_rhs,&vec_tmp);CHKERRQ(ierr);
-    mpi_lsa_com_vec_send(com,&vec_tmp);
+//    ierr = VecDuplicate(ksp->vec_rhs,&vec_tmp);CHKERRQ(ierr);
+//    mpi_lsa_com_vec_send(com,&vec_tmp);
+//    VecView(vec_tmp, PETSC_VIEWER_STDOUT_WORLD);
   }
 
   /* mark lack of convergence */

@@ -30,9 +30,9 @@ PetscErrorCode Father(com_lsa * com, Vec * v){
 
 	while(!end){
 		if(!mpi_lsa_com_type_recv(com,&exit_type)){
+		PetscPrintf(PETSC_COMM_WORLD,"\nFather exit type = %d \n", exit_type);
 		  if(exit_type==666){
 		    end=1;
-
 		    for(i=0;i<com->out_vec_sended;i++){
 
 					MPI_Test(&(com->vec_requests[i]),&flag,&status);
@@ -45,6 +45,22 @@ PetscErrorCode Father(com_lsa * com, Vec * v){
 		    mpi_lsa_com_type_send(com,&exit_type);
 		  	break;
 		  }
+
+                  if(exit_type==999){
+			PetscPrintf(PETSC_COMM_WORLD, "\nFather receive and send the GMRES FT simulation msg\n");
+                        end = 1;
+			for(i=0;i<com->out_vec_sended;i++){
+
+                                        MPI_Test(&(com->vec_requests[i]),&flag,&status);
+                             
+                                        if(!flag){
+                                                MPI_Cancel(&(com->vec_requests[i]));
+                                        }
+                    }
+                    mpi_lsa_com_type_send(com,&exit_type);
+                        break;
+                  }
+
 		}
 		/* check if there's an incoming message */
 		if(!mpi_lsa_com_vec_recv(com, &vec_tmp_receive) && !(ls_load^=ls_load_any)){

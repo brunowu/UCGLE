@@ -71,8 +71,8 @@ int main(int argc, char ** argv){
 	else if(nols==0) PetscPrintf(com.com_world,"]> not using LSA preconditionning %d\n",nols);
 	
 	PetscOptionsHasName(NULL,NULL,"-GMRES_FT",&gft_flg);
-	if(!gft_flg)
-	{
+	
+	
 
 		if(com.color_group==GMRES_GR){
 			PetscPrintf(com.com_group,"]> Launching GMRES\n");
@@ -90,7 +90,8 @@ int main(int argc, char ** argv){
 			LSQR(&com,&vsize);
 		}
 
-	}
+
+/*
 	else{
 
 
@@ -112,6 +113,7 @@ int main(int argc, char ** argv){
 
 
 	}
+*/
 
         MPI_Barrier(MPI_COMM_WORLD);
         VecDestroy(&v);
