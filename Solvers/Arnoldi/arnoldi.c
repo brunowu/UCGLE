@@ -109,7 +109,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 
 		PetscReal nn;
 		VecNorm(sol_tmp, NORM_2,&nn);
-		PetscPrintf(PETSC_COMM_WORLD, "Arnoldi received tmp solution norm = %.13g\n",nn);
+//		PetscPrintf(PETSC_COMM_WORLD, "Arnoldi received tmp solution norm = %.13g\n",nn);
 		
 		for(j=0;j<eigen_nb;j++){
 			eigenvalues[j]=(PetscScalar)0.0;
