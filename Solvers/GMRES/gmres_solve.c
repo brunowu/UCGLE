@@ -28,6 +28,8 @@ PetscErrorCode MyKSPSolve_FGMRES(KSP ksp,com_lsa * com)
   PetscBool      diagonalscale;
   Vec vec_tmp;
 
+  PetscInt max_k = fgmres->max_k;
+
   PetscFunctionBegin;
   ierr = PCGetDiagonalScale(ksp->pc,&diagonalscale);CHKERRQ(ierr);
   if (diagonalscale) SETERRQ1(PetscObjectComm((PetscObject)ksp),PETSC_ERR_SUP,"Krylov method %s does not support diagonal scaling",((PetscObject)ksp)->type_name);
@@ -46,7 +48,7 @@ PetscErrorCode MyKSPSolve_FGMRES(KSP ksp,com_lsa * com)
      KSPFGMRESCycle expects... */
 
   ierr = KSPFGMRESCycle(&cycle_its,ksp);CHKERRQ(ierr);
-  while (!ksp->reason) {
+  while (!ksp->reason && ksp->its % max_k == 0) {
     if(!GmresLSAPrecond(com,ksp))
     {
 	PetscPrintf(PETSC_COMM_WORLD,"\n@@@>>>Preconditioning of LS method in: %d iterations\n\n",ksp->its);
