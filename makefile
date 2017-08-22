@@ -13,7 +13,7 @@ MDIR=./data
 
 MPI_NODES=1
 GMRES_RESTART=300
-KSP_MONITOR=-ksp_monitor_true_residual
+#KSP_MONITOR=-ksp_monitor_true_residual
 RTOL=1e-100
 DIVTOL=1e1000
 MAX_ITE=20000
@@ -25,7 +25,7 @@ MAT=utm300.mtx_300x300_3155nnz
 
 ARNOLDI_PRECISION=1e-1
 ARNOLDI_NBEIGEN= 18
-ARNOLDI_MONITOR = -eps_monitor_conv
+#ARNOLDI_MONITOR = -eps_monitor_conv
 ARNOLDI_NCV = 100
 
 

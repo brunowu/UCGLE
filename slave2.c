@@ -67,18 +67,36 @@ int main( int argc, char *argv[] ) {
   EPSGetConverged(eps,&nconv);
   PetscPrintf(PETSC_COMM_WORLD," Number of converged eigenpairs: %D\n\n",nconv);
   /*Clean*/
-
+  printf("\n\n HELLLLLLO \n\n");
+  int exit_type = 0;
+  MPI_Status status;
+  int flag = 0,count;
+  int end = 0;
+  while(!end){
+  	MPI_Iprobe(MPI_ANY_SOURCE,MPI_ANY_TAG,intra_comm2,&flag, &status);
+  	if(flag){
+  		MPI_Recv(&exit_type,1, MPI_INT, status.MPI_SOURCE,status.MPI_TAG,intra_comm2,&status);
+        	printf("\n###Child 2 recv msg = %d \n", exit_type);  
+	}
+	if(exit_type == 666){
+		end = 1;
+		break;
+	}
+  }
   ierr = EPSDestroy(&eps);CHKERRQ(ierr);
   ierr = VecDestroy(&x);CHKERRQ(ierr);
   ierr = VecDestroy(&b);CHKERRQ(ierr);
   ierr = MatDestroy(&A);CHKERRQ(ierr);
-  PetscPrintf(PETSC_COMM_WORLD,"]> Cleaned structures, finalizing\n");
 
-  MPI_Comm_free(&parentcomm);
-  MPI_Comm_free(&intra_comm2);
-  SlepcFinalize(); 
-  MPI_Finalize();
-
+  PetscPrintf(PETSC_COMM_WORLD,"]> SLEPC finalized\n");
+ 
+  SlepcFinalize();
+  //MPI_Comm_free(&parentcomm);
+  //MPI_Comm_free(&intra_comm2);
+ 
+    //printf("\n\n HELLLLLLO \n\n");
+  //MPI_Finalize();
+//  printf("\n\n HELLLLLLO \n\n");
   return 0;
 }
 

@@ -1,16 +1,10 @@
 #include "mpi_comm.h"
 
-int mpi_lsa_com_type_send(com_lsa * com, int * type){
+int mpi_lsa_com_type_send(int * type){
   MPI_Status status;
   int flag,i;
 
   /*check if previous requests where completed */
-  for(i=0;i<com->out_sended;i++){
-    MPI_Test(&(com->type_requests[i]),&flag,&status);
-    /* if not cancel it */
-    if(!flag)
-      MPI_Cancel(&(com->type_requests[i]));
-  }
   /* for each node in the out domain */
   for(i=0;i<com->out_number;i++){
     MPI_Isend(type,1,MPI_INT,i,i,com->out_com,&(com->type_requests[i]));

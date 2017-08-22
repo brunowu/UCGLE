@@ -22,6 +22,7 @@ int main( int argc, char *argv[] ) {
 
   MPI_Comm intra_comm;
   MPI_Intercomm_merge( parentcomm, 1, &intra_comm );
+
   ierr=loadInputs(&A,&b,&x);CHKERRQ(ierr);
   PetscPrintf(PETSC_COMM_WORLD,"]> Data loaded\n");
 
@@ -43,12 +44,19 @@ int main( int argc, char *argv[] ) {
 
   PetscPrintf(PETSC_COMM_WORLD,"]> Cleaned structures, finalizing\n");
 
+  int exit_type = 666;
+ 
+  MPI_Request request;
+
+  MPI_Isend(&exit_type,1, MPI_INT, 0,0, intra_comm, &request);
+
+  //PetscFinalize();
+
   MPI_Comm_free(&parentcomm);
   MPI_Comm_free(&intra_comm);
-
   PetscFinalize();
-  MPI_Finalize();
-
+  //MPI_Finalize();
+  printf("\nlllalalala\n\n");
   return 0;
 }
 

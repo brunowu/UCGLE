@@ -3,6 +3,7 @@
 #include "petsc.h"
 #include "petscksp.h"
 #include "libs.h"
+#include "petscsys.h"
 
 PetscErrorCode loadInputs(Mat * A, Vec * b, Vec * x);
 PetscErrorCode loadMatrix(Mat * A);
