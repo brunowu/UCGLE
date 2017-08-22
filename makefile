@@ -1,9 +1,7 @@
-ALL: blib exec slave1 slave2
+ALL: blib exec
 
 #compilation and various flags
 EXEC    = master
-SLAVE1  = worker
-SLAVE2  = worker2
 CLEANFILES  = ${EXEC}
 OFILES= ${wildcard ./*.o}
 #CFLAGS = -O3
@@ -45,26 +43,13 @@ distclean :
 	-@echo "Finised cleaning application and libraries"
 	-@echo "========================================="	
 
-exec: master.o
+exec: main.o
 	-@echo "BEGINNING TO COMPILE APPLICATION "
 	-@echo "========================================="
-	-@${CLINKER} -o ${EXEC} master.o ${PETSC_LIB}
+	-@${CLINKER} -o ${EXEC} main.o ${PETSC_LIB}
 	-@echo "Completed building application"
 	-@echo "========================================="
 
-slave1: slave.o
-	-@echo "BEGINNING TO COMPILE SLAVE1 "
-	-@echo "========================================="
-	-@${CLINKER} -o ${SLAVE1} slave.o ${PETSC_LIB}
-	-@echo "Completed SLAVE1 Compilation"
-	-@echo "========================================="
-
-slave2: slave2.o
-	-@echo "BEGINNING TO COMPILE SLAVE2 "
-	-@echo "========================================="
-	-@${CLINKER} -o ${SLAVE2} slave2.o -L${SLEPC_LIB} -L${SLEPC_DIR}/${PETSC_ARCH}/lib
-	-@echo "Completed SLAVE2 Compilation"
-	-@echo "========================================="
 #-ksp_monitor_true_residual -eps_monitor
 
 runa:
