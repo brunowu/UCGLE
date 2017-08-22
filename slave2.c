@@ -19,7 +19,9 @@ int main( int argc, char *argv[] ) {
   ierr=SlepcInitialize(&argc,&argv,PETSC_NULL,help);CHKERRQ(ierr);
   PetscPrintf(PETSC_COMM_WORLD,"\n\n]> Initializing SLEPc\n");
   int myrank;
+  int currentsize;
   MPI_Comm_rank( MPI_COMM_WORLD, &myrank );
+//  MPI_Comm_size(MPI_COMM_WORLD, &currentsize);
 
   MPI_Comm parentcomm;
   MPI_Comm_get_parent( &parentcomm );
@@ -27,16 +29,7 @@ int main( int argc, char *argv[] ) {
   MPI_Comm intra_comm2;
   MPI_Intercomm_merge( parentcomm, 1, &intra_comm2 );
 
-  printf("\n\n\nThis is hello from SLAVE2\n\n\n");
-
-  if ( myrank == 0 ) {
-    int tmp_size;
-    MPI_Comm_remote_size( parentcomm, &tmp_size );
-
-    MPI_Comm_size( MPI_COMM_WORLD, &tmp_size );
-
-    MPI_Comm_size( intra_comm2, &tmp_size );
-  }
+  PetscPrintf(PETSC_COMM_WORLD, "VALIDATION ]> This is hello from SLAVE2\n");
 
   ierr=loadInputs(&A,&x,&b);CHKERRQ(ierr);
   PetscPrintf(PETSC_COMM_WORLD,"]> Data loaded\n");
@@ -67,7 +60,7 @@ int main( int argc, char *argv[] ) {
   EPSGetConverged(eps,&nconv);
   PetscPrintf(PETSC_COMM_WORLD," Number of converged eigenpairs: %D\n\n",nconv);
   /*Clean*/
-  printf("\n\n HELLLLLLO \n\n");
+//  printf("\n\n HELLLLLLO \n\n");
   int exit_type = 0;
   MPI_Status status;
   int flag = 0,count;
@@ -76,13 +69,16 @@ int main( int argc, char *argv[] ) {
   	MPI_Iprobe(MPI_ANY_SOURCE,MPI_ANY_TAG,intra_comm2,&flag, &status);
   	if(flag){
   		MPI_Recv(&exit_type,1, MPI_INT, status.MPI_SOURCE,status.MPI_TAG,intra_comm2,&status);
-        	printf("\n###Child 2 recv msg = %d \n", exit_type);  
+        	printf("\nmsg>>> Child 2 recv msg = %d \n", exit_type);  
 	}
 	if(exit_type == 666){
 		end = 1;
 		break;
 	}
   }
+  MPI_Comm_size(MPI_COMM_WORLD, &currentsize);
+  PetscPrintf(PETSC_COMM_WORLD,"ERROR CHECK >>> 2-SLAVE: my size is %d\n",currentsize);
+
   ierr = EPSDestroy(&eps);CHKERRQ(ierr);
   ierr = VecDestroy(&x);CHKERRQ(ierr);
   ierr = VecDestroy(&b);CHKERRQ(ierr);
@@ -91,8 +87,8 @@ int main( int argc, char *argv[] ) {
   PetscPrintf(PETSC_COMM_WORLD,"]> SLEPC finalized\n");
  
   SlepcFinalize();
-  //MPI_Comm_free(&parentcomm);
-  //MPI_Comm_free(&intra_comm2);
+  MPI_Comm_free(&parentcomm);
+  MPI_Comm_free(&intra_comm2);
  
     //printf("\n\n HELLLLLLO \n\n");
   //MPI_Finalize();

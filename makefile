@@ -1,10 +1,11 @@
-ALL: blib exec slave1 slave2
+ALL: blib exec slave1 slave2 slave3
 
 #compilation and various flags
 EXEC    = master
 SLAVE1  = worker
 SLAVE2  = worker2
-CLEANFILES  = ${EXEC} ${SLAVE1} ${SLAVE2}
+SLAVE3  = worker3
+CLEANFILES  = ${EXEC} ${SLAVE1} ${SLAVE2} ${SLAVE3}
 OFILES= ${wildcard ./*.o}
 #CFLAGS = -O3
 
@@ -20,7 +21,6 @@ MAX_ITE=20000
 PC=none
 ATOL=1e-10
 MAT=utm300.mtx_300x300_3155nnz
-
 
 
 ARNOLDI_PRECISION=1e-1
@@ -67,7 +67,13 @@ slave2: slave2.o libs.o
 	-@${CLINKER} -o ${SLAVE2} slave2.o libs.o -L${SLEPC_LIB} -L${SLEPC_DIR}/${PETSC_ARCH}/lib
 	-@echo "Completed SLAVE2 Compilation"
 	-@echo "========================================="
-#-ksp_monitor_true_residual -eps_monitor
+
+slave3: slave3.o libs.o
+	-@echo "BEGINNING TO COMPILE SLAVE3 "
+	-@echo "========================================="
+	-@${CLINKER} -o ${SLAVE3} slave3.o libs.o -L${SLEPC_LIB} -L${SLEPC_DIR}/${PETSC_ARCH}/lib
+	-@echo "Completed SLAVE3 Compilation"
+	-@echo "========================================="
 
 runa:
 	-@${MPIEXEC} -np ${MPI_NODES} ./${EXEC} -ksp fgmres ${GMRES_MONITOR} -ksp_gmres_restart ${GMRES_RESTART} ${KSP_MONITOR} -ksp_rtol ${RTOL} \
