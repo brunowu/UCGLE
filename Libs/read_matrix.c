@@ -1,7 +1,7 @@
 /*Copyright (c) 2011—2017. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
 #include "read_matrix.h"
 
-PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int * communicator){
+PetscErrorCode read_matrix_vector(Mat * A, Vec * v){
 	char filea[PETSC_MAX_PATH_LEN];
 	char fileb[PETSC_MAX_PATH_LEN];
 	char err[PETSC_MAX_PATH_LEN];

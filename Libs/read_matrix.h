@@ -6,6 +6,7 @@
 #include "petscerror.h"
 #include "vec_generate.h"
 
+
 #endif
-PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int * communicator);
+PetscErrorCode read_matrix_vector(Mat * A, Vec * v);
 

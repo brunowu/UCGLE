@@ -2,12 +2,16 @@
 #include "arnoldi.h"
 
 /* Compute cyclicly eigenvalue */
-PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
+int main( int argc, char *argv[] ) {
 
 	EPS eps; /* eigensolver context */
 	char  load_path[PETSC_MAX_PATH_LEN],export_path[PETSC_MAX_PATH_LEN];
 	PetscInt end,first,validated;
 	PetscErrorCode ierr;
+	Mat A;
+	Vec v;
+
+	read_matrix_vector(&A, &b);
 	/* eigenvalues number is set to 100, can be changed if needed
 	   we choosed to fix it because mallocs weren't working properly */
 	PetscScalar eigenvalues[500], ei, er;
@@ -58,15 +62,15 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	/* create the eigensolver */
 	ierr=EPSCreate(PETSC_COMM_WORLD,&eps);CHKERRQ(ierr);
 	/* set the matrix operator */
-	ierr=EPSSetOperators(eps,*A,PETSC_NULL);CHKERRQ(ierr);
+	ierr=EPSSetOperators(eps,A,PETSC_NULL);CHKERRQ(ierr);
 	ierr=EPSSetProblemType(eps, EPS_NHEP);CHKERRQ(ierr);
 	/* set options */
 	ierr=EPSSetType(eps,EPSARNOLDI);
 	ierr=EPSSetFromOptions(eps);CHKERRQ(ierr);
 	/* duplicate vector properties */
-	ierr=VecDuplicate(*v,&initialv);CHKERRQ(ierr);
+	ierr=VecDuplicate(v,&initialv);CHKERRQ(ierr);
         ierr=VecDuplicate(*v,&sol_tmp);CHKERRQ(ierr);
-	ierr=VecDuplicate(*v,&nullv);CHKERRQ(ierr);
+	ierr=VecDuplicate(v,&nullv);CHKERRQ(ierr);
 	ierr=VecSet(nullv,(PetscScalar)0.0);CHKERRQ(ierr);
 
 	ierr=VecSetRandom(initialv,PETSC_NULL);//initialize initial vector to random
@@ -180,33 +184,6 @@ ierr=EPSDestroy(&eps);CHKERRQ(ierr);
 ierr=VecDestroy(&initialv);CHKERRQ(ierr);
 ierr=VecDestroy(&nullv);CHKERRQ(ierr);
 
-
-if(exit_type == 999){
-	PetscPrintf(PETSC_COMM_WORLD, "\n Reset GMRES to Arnoldi\n",exit_type);
-	PetscViewer pcv;
-	ierr = KSPCreate(PETSC_COMM_WORLD, &kspft);CHKERRQ(ierr);
-	ierr = KSPSetType(kspft,KSPFGMRES);CHKERRQ(ierr);
-	ierr = KSPSetOperators(kspft, *A, *A);CHKERRQ(ierr);
-	ierr = KSPSetFromOptions(kspft);CHKERRQ(ierr);
-	KSPSetTolerances(kspft,1e-100,1e-10,1e100,20000);
-	KSPSetInitialGuessNonzero(kspft, PETSC_TRUE);
-	ierr = KSPSolve(kspft, *v, sol_tmp); CHKERRQ(ierr);
-
-	KSPGetConvergedReason(kspft,&reason);
-
-	if (reason<0) {
-			PetscPrintf(PETSC_COMM_WORLD,"\nResolution : Divergence in acceptable iteration steps.\n");
-		}
-		else {
-			KSPGetIterationNumber(kspft,&its);
-			PetscPrintf(PETSC_COMM_WORLD,"\nResolution : Convergence in %d iterations. \n",its);
-		}
-	/*
-	for(int mm=0; mm<10;mm++){
-			PetscPrintf(PETSC_COMM_WORLD, "\n mm = %d\n",mm);
-	}
-	*/
-}
 }
 else{
 	while(!end){

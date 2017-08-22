@@ -12,11 +12,12 @@
 #include "kspsolve.h"
 #include <time.h>
 #include <unistd.h>
+#include "../../Libs/read_matrix.h"
 
 #include "../../Libs/vec_generate.h"
 
 #include "gmres_precond.h"
 
-PetscErrorCode classicalGMRES(Vec * b, Mat * A);
+//PetscErrorCode classicalGMRES(Vec * b, Mat * A);
 
 #endif

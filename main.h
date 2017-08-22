@@ -31,3 +31,5 @@
 #include "./Solvers/Father/father.h"
 #include "./Libs/real2complex.h"
 #include "./Solvers/GMRES/classical_gmres.h"
+#include <stdio.h>
+#include <mpi.h>

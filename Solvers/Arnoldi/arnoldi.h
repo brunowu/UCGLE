@@ -12,6 +12,6 @@
 #define EIGEN_ALL 20
 #endif
 
-PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec * v);
+//PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec * v);
 
 #endif

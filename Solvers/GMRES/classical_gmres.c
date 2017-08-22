@@ -1,29 +1,33 @@
 /*Copyright (c) 2011—2017. Pierre-Yves AQUILANTI and Xinzhe WU in Maison de la Simulation. All rights reserved */
 #include "classical_gmres.h"
 
-PetscErrorCode classicalGMRES(Vec * b, Mat * A){
+int main( int argc, char *argv[] ) {
+
 	PetscErrorCode ierr;
-	KSP ksp, kspp;
-	Vec x, c;
+	KSP ksp;
+	Vec x, c, b;
+	Mat A;
 	KSPConvergedReason reason;
 	PetscInt its, nols, ntimes;
 	int i, size;
 	PetscBool flagls, flagtimes;
 	double cost_time;
 	clock_t start, end;
-
 	PetscReal norm;
-	VecGetSize(*b, &size);
-	VecDuplicate(*b, &c);
-        PetscPrintf(PETSC_COMM_WORLD,"#} GMRES Creating and setting vector x\n");
-	ierr = VecDuplicate(*b, &x);CHKERRQ(ierr);
+
+	read_matrix_vector(&A, &b);
+
+	VecGetSize(b, &size);
+	VecDuplicate(b, &c);
+    PetscPrintf(PETSC_COMM_WORLD,"#} GMRES Creating and setting vector x\n");
+	ierr = VecDuplicate(b, &x);CHKERRQ(ierr);
 	ierr = PetscObjectSetName((PetscObject) x, "Solution");CHKERRQ(ierr);
 	ierr = VecSet(x, 0.0); CHKERRQ(ierr);
 	ierr = PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_nopc",&nols,&flagls);CHKERRQ(ierr);
 	ierr = KSPCreate(PETSC_COMM_WORLD, &ksp);CHKERRQ(ierr);
 	ierr = KSPSetType(ksp,KSPFGMRES);CHKERRQ(ierr);
 //	KSPSetInitialGuessNonzero(ksp, PETSC_TRUE);
-	ierr = KSPSetOperators(ksp, *A, *A);CHKERRQ(ierr);
+	ierr = KSPSetOperators(ksp, A, A);CHKERRQ(ierr);
 	ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
 
 	PetscOptionsGetInt(NULL,NULL,"-ntimes",&ntimes,&flagtimes);
