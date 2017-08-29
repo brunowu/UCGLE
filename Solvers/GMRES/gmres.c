@@ -27,7 +27,7 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 //	KSPSetInitialGuessNonzero(ksp, PETSC_TRUE);
 	ierr = KSPSetOperators(ksp, *A, *A);CHKERRQ(ierr);
 	ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
-        KSPSetInitialGuessNonzero(ksp, PETSC_TRUE);
+//        KSPSetInitialGuessNonzero(ksp, PETSC_TRUE);
 	PetscOptionsGetInt(NULL,NULL,"-ntimes",&ntimes,&flagtimes);
 
 	if(!flagtimes){
@@ -35,17 +35,26 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 	}
 
 	for (i=1; i<=ntimes; i++) {
+		mpi_lsa_com_type_send(com,&i);
+
+                        VecCopy(*b,c);
+                        VecNorm(c, NORM_2,&norm);
+                        VecScale(c, 0.01/norm);
+/*
 		if(i==1){
 			VecCopy(*b,c);
-//			VecNorm(c, NORM_2,&norm);
-//			VecScale(c, 0.01/norm);
+			VecNorm(c, NORM_2,&norm);
+			VecScale(c, 0.01/norm);
 		}
 		else{
+//	                        VecCopy(*b,c);
 			generate_random_seed_vector(size, -10,10, i,&c);
 			VecNorm(c, NORM_2,&norm);
 			VecScale(c, 0.01/norm);
 		}
+*/
 		start=clock();
+		PetscPrintf(PETSC_COMM_WORLD,"\n\n------------\nStart the %d times Resolution \n-------------\n\n",i);
 		ierr = MyKSPSolve(ksp, c, x,com); CHKERRQ(ierr);
 		end=clock();
   		cost_time = (double)(end - start)/CLOCKS_PER_SEC;
@@ -56,10 +65,11 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 		else if(reason < 0 && gft_flg){
 			int gft = 999;
 			mpi_lsa_com_type_send(com,&gft);
-			PetscPrintf(PETSC_COMM_WORLD, "\nGMRES Simulated to be failure \n");
+			PetscPrintf(PETSC_COMM_WORLD, "\n\n\nERROR >>> GMRES Simulated to be failure, so send the signal 999 \n");
 		}
 		else {
 			KSPGetIterationNumber(ksp,&its);
+		//	mpi_lsa_com_type_send(com,&i);
 			PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Convergence in %f seconds / %d iterations. \n", i, cost_time, its);
 		
 		}

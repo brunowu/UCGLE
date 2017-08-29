@@ -96,13 +96,13 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		    break;
 		  }
 
-		  if(exit_type=999){
+		  if(exit_type==999){
 			end = 1;
 			mpi_lsa_com_type_send(com,&exit_type);
 			break;
 		  }
 		}
-
+		PetscPrintf(PETSC_COMM_WORLD, "\n\nERAM receving %d \n\n", exit_type);
 		if(!mpi_lsa_com_vec_recv(com, &sol_tmp)){
 				VecGetSize(sol_tmp, &taille);
 		}
@@ -131,6 +131,11 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 			load_any=PETSC_FALSE;
 			ierr=EPSSetInitialSpace(eps,1,&initialv);CHKERRQ(ierr);
 		}
+		if(exit_type !=0 && exit_type !=999 && exit_type !=666){
+			int i = exit_type;
+			EPSSetDimensions(eps, 10, 100+(i-1)*20,200);
+			PetscPrintf(PETSC_COMM_WORLD,"\n\ni = %d \n\n",exit_type);
+		}
 		
 		ierr=EPSSolve(eps);CHKERRQ(ierr);
 		
@@ -157,7 +162,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		 			exit = PETSC_TRUE;
 					break;
   				}
-            if(exit_type=999){
+            if(exit_type==999){
                     end = 1;
                     mpi_lsa_com_type_send(com,&exit_type);
                     break;
@@ -182,7 +187,7 @@ ierr=VecDestroy(&nullv);CHKERRQ(ierr);
 
 
 if(exit_type == 999){
-	PetscPrintf(PETSC_COMM_WORLD, "\n Reset GMRES to Arnoldi\n",exit_type);
+	PetscPrintf(PETSC_COMM_WORLD, "\n Reset Arnoldi to GMRES\n",exit_type);
 	PetscViewer pcv;
 	ierr = KSPCreate(PETSC_COMM_WORLD, &kspft);CHKERRQ(ierr);
 	ierr = KSPSetType(kspft,KSPFGMRES);CHKERRQ(ierr);
