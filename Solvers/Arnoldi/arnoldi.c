@@ -79,7 +79,6 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 
 	ierr=PetscOptionsHasName(NULL,PETSC_NULL,"-ksp_arnoldi_load_any",&load_any);CHKERRQ(ierr);
 	ierr=PetscOptionsHasName(NULL,PETSC_NULL,"-ksp_arnoldi_cexport",&continuous_export);CHKERRQ(ierr);
-	 
 	ierr=VecDuplicate(initialv,&vecteur_initial);CHKERRQ(ierr);
 
 

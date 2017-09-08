@@ -76,26 +76,30 @@ PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 		for(i=0;i<eigen_max;i++)
 		  data[i]=(PetscScalar)0.0+PETSC_i*(PetscScalar)0.0;
 		/* if received something */
-		if(!mpi_lsa_com_array_recv(com, &data_size,data) || data_load || data_load_any){
+//		if(!mpi_lsa_com_array_recv(com, &data_size,data) || data_load || data_load_any){
 			/* we received data or load it depending on the flags (for first step only*/
 			if(data_load&&data_load_any){
 			  data_load_any=PETSC_FALSE;
 			  data_load=PETSC_TRUE;
 			}
 			if(!(data_load^=data_load_any)){
+
+				//if(!mpi_lsa_com_array_recv(com, &data_size,data)
 				/* first we gonna remove some non-needed values */
-				epurer(data,&data_size);
+				if(!mpi_lsa_com_array_recv(com, &data_size,data)){
+					epurer(data,&data_size);
 				/* add them to the accumulated eigenvalues */
 				/* if full renew full eigenvalues */
-				if(eigen_total+data_size>*vector_size) eigen_total=0;
+					if(eigen_total+data_size>*vector_size) eigen_total=0;
 				/* select eigenvalues */
-				for(i=0;i<data_size;i++){
-					eigen_cumul[eigen_total+i]=data[i];
-				}
-				eigen_total+=data_size;
-				if(cumul<eigen_total) cumul=eigen_total;
-				for(i=0;i<cumul;i++){
-					eigen_tri[i]=eigen_cumul[i];
+					for(i=0;i<data_size;i++){
+						eigen_cumul[eigen_total+i]=data[i];
+					}
+					eigen_total+=data_size;
+					if(cumul<eigen_total) cumul=eigen_total;
+					for(i=0;i<cumul;i++){
+						eigen_tri[i]=eigen_cumul[i];
+					}
 				}
 			} else {
 				ierr=readBinaryScalarArray(load_path,&cumul, eigen_tri);CHKERRQ(ierr);
@@ -135,7 +139,7 @@ PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 					  delta, c, d,&mu, &ls_eigen, &ls_eigen_min, &eigen_max);
 				}
 			}
-		}
+//		}
 
 		if(ls_eigen>1){
 			/* place the computed results inside the array */
