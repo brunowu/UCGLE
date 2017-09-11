@@ -72,7 +72,7 @@ PetscErrorCode Father(com_lsa * com, Vec * v){
                     }
 
 		       mpi_lsa_com_type_send(com,&exit_type);
-		       PetscPrintf(PETSC_COMM_WORLD, "\nGMRES has sent RESOLUTION COUNT = %d\n",exit_type);
+//		       PetscPrintf(PETSC_COMM_WORLD, "\nGMRES has sent RESOLUTION COUNT = %d\n",exit_type);
 		  }
 
 		

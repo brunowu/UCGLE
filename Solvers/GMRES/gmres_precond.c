@@ -65,7 +65,7 @@ PetscErrorCode GmresLSAPrecond(com_lsa * com, KSP ksp)
 	    }
 	    
 //	PetscPrintf(PETSC_COMM_WORLD,"\n\nread\n\n");
-  	PetscPrintf(PETSC_COMM_WORLD,"\n\n#}GMRES Component recived data of size %d\n\n", (PetscInt)tmp[0]);
+//  	PetscPrintf(PETSC_COMM_WORLD,"\n\n#}GMRES Component recived data of size %d\n\n", (PetscInt)tmp[0]);
 	    tmp_size = ((PetscInt)data_tmp[0])*3+2;
 	    if((((PetscInt)data_tmp[0])*3+2)!=size_data){
 	      PetscPrintf(PETSC_COMM_WORLD,"#} GMRESLSPrecond data is not consistent : size mpi %d size data*3+2 %d %e data\n",

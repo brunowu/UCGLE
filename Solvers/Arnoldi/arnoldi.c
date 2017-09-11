@@ -101,7 +101,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 			break;
 		  }
 		}
-		PetscPrintf(PETSC_COMM_WORLD, "\n\nERAM receving %d \n\n", exit_type);
+//		PetscPrintf(PETSC_COMM_WORLD, "\n\nERAM receving %d \n\n", exit_type);
 		if(!mpi_lsa_com_vec_recv(com, &sol_tmp)){
 				VecGetSize(sol_tmp, &taille);
 		}
@@ -133,7 +133,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		if(exit_type !=0 && exit_type !=999 && exit_type !=666){
 			int i = exit_type;
 			EPSSetDimensions(eps, 10, 100+(i-1)*20,200);
-			PetscPrintf(PETSC_COMM_WORLD,"\n\ni = %d \n\n",exit_type);
+//			PetscPrintf(PETSC_COMM_WORLD,"\n\ni = %d \n\n",exit_type);
 		}
 		
 		ierr=EPSSolve(eps);CHKERRQ(ierr);

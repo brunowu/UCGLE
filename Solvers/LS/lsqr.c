@@ -164,6 +164,7 @@ PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 	if(data_export){
 		ierr=writeBinaryScalarArray(export_path, cumul, eigen_tri);
 	}
+//	printf("HELLO FROM LS\n\n");
 	/* Free the arrays */
 	PetscFree(eigen_tri);
 	PetscFree(eigen_cumul);
