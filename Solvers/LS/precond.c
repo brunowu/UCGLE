@@ -13,7 +13,7 @@ PetscErrorCode LSPrecond(PetscReal a_ell, PetscReal d_ell, PetscReal c_ell,
 	KSP ksplsqr, kspchol;
 	PC  pcchol, pclsqr;
 	Vec rhs,soln;
-	int i,j,k,nu;
+	PetscInt i,j,k,nu;
 	PetscErrorCode ierr;
 	/* allocate work array gamma and mm_tmp, init it to 0 */
 	ierr=PetscMalloc(((*nb_eigen_all)+3)*sizeof(PetscScalar*),&gamma);CHKERRQ(ierr);
@@ -162,8 +162,8 @@ PetscErrorCode LSPrecond(PetscReal a_ell, PetscReal d_ell, PetscReal c_ell,
 	MatAssemblyEnd(F,MAT_FINAL_ASSEMBLY);
 
 	#ifdef DEBUG
-	int mlsizex,mlsizey,mgsizex,mgsizey;
-	int vssizel,vssizeg,vrsizel,vrsizeg;
+	PetscInt mlsizex,mlsizey,mgsizex,mgsizey;
+	PetscInt vssizel,vssizeg,vrsizel,vrsizeg;
 	MatGetSize(F,&mgsizex,&mgsizey);
 	MatGetLocalSize(F,&mlsizex,&mlsizey);
 	VecGetSize(soln,&vssizeg);
@@ -186,7 +186,7 @@ PetscErrorCode LSPrecond(PetscReal a_ell, PetscReal d_ell, PetscReal c_ell,
 	/* now we are ready to kick some ass and chew some bubble gum
 	   unfortunately i'm all out of gum */
 	ierr = KSPSolve(ksplsqr, rhs, soln); CHKERRQ(ierr);
-	int its;
+	PetscInt its;
 	KSPGetIterationNumber(ksplsqr,&its);
 
 	/* extract solution elements and place them into eta*/

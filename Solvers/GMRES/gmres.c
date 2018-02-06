@@ -7,7 +7,7 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 	Vec x, c;
 	KSPConvergedReason reason;
 	PetscInt its, nols, ntimes;
-	int i, size;
+	PetscInt i, size;
 	PetscBool flagls, flagtimes, gft_flg;
 	double cost_time;
 	clock_t start, end;

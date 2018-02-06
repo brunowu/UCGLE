@@ -1,15 +1,15 @@
 /*CREATED BY PIERRE-YVES AQUILANTI 2011*/
 #include "lsqr.h"
 
-PetscErrorCode LSQR(com_lsa * com, int * vector_size){
+PetscErrorCode LSQR(com_lsa * com, PetscInt * vector_size){
 	/* variables */
 	PetscInt end,cumul,eigen_received,eigen_total,eigen_max;
 	char  load_path[PETSC_MAX_PATH_LEN],export_path[PETSC_MAX_PATH_LEN];
-	int i,info,type=0;
+	PetscInt i,info,type=0;
 	PetscBool flag,data_load,data_export,continuous_export,data_load_any;
 	PetscScalar * data,*eigen_cumul,*eigen_tri,*d,*c;
 	PetscReal a_ell,c_ell,d_ell,d_reel;
-	int data_size;
+	PetscInt data_size;
 	PetscInt chsign;
 	PetscInt mu1,mu2,mu,result_array_size;
 	PetscScalar alpha,*eta,*beta,*delta,scalar_tmp;

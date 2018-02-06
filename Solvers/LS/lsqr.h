@@ -27,6 +27,6 @@
 #define EIGEN_MAX 20	
 #endif
 
-PetscErrorCode LSQR(com_lsa * com, int * vector_size);
+PetscErrorCode LSQR(com_lsa * com, PetscInt * vector_size);
 
 #endif
