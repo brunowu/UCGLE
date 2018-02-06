@@ -42,8 +42,23 @@ PetscErrorCode MyKSPSolve(KSP ksp,Vec b,Vec x,com_lsa * com)
   ksp->transpose_solve = PETSC_FALSE;
 
   if (ksp->guess) {
+  #if PETSC_VERSION_LT(3,8,0)
     ierr            = KSPFischerGuessFormGuess(ksp->guess,ksp->vec_rhs,ksp->vec_sol);CHKERRQ(ierr);
     ksp->guess_zero = PETSC_FALSE;
+  #else
+    PetscObjectState ostate,state;
+
+    ierr = KSPGuessSetUp(ksp->guess);CHKERRQ(ierr);
+    ierr = PetscObjectStateGet((PetscObject)ksp->vec_sol,&ostate);CHKERRQ(ierr);
+    ierr = KSPGuessFormGuess(ksp->guess,ksp->vec_rhs,ksp->vec_sol);CHKERRQ(ierr);
+    ierr = PetscObjectStateGet((PetscObject)ksp->vec_sol,&state);CHKERRQ(ierr);
+    if (state != ostate) {
+      ksp->guess_zero = PETSC_FALSE;
+    } else {
+      PetscInfo(ksp,"Using zero initial guess since the KSPGuess object did not change the vector\n");
+      ksp->guess_zero = PETSC_TRUE;
+    }
+  #endif
   }
   /* KSPSetUp() scales the matrix if needed */
   ierr = KSPSetUp(ksp);CHKERRQ(ierr);
@@ -134,7 +149,11 @@ So in order to use our FGMRES we make it explicitly like follows
   }
 
   if (ksp->guess) {
+    #if PETSC_VERSION_LT(3,8,0)
     ierr = KSPFischerGuessUpdate(ksp->guess,ksp->vec_sol);CHKERRQ(ierr);
+    #else
+    ierr = KSPGuessUpdate(ksp->guess,ksp->vec_rhs,ksp->vec_sol);CHKERRQ(ierr);
+    #endif
   }
 
   ierr = MPI_Comm_rank(comm,&rank);CHKERRQ(ierr);
