@@ -12,6 +12,10 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 	double cost_time;
 	clock_t start, end;
 
+
+	KSP_FGMRES     *fgmres = (KSP_FGMRES *)(ksp->data);
+
+
 	PetscReal norm;
 	PetscOptionsHasName(NULL,NULL,"-GMRES_FT",&gft_flg);
 	
@@ -73,6 +77,8 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 			PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Convergence in %f seconds / %d iterations. \n", i, cost_time, its);
 		
 		}
+
+		VecView(ksp->vec_rhs,PETSC_VIEWER_STDOUT_WORLD);
 	}
 
 			int exit_type=666;
