@@ -57,26 +57,65 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 			VecScale(c, 0.01/norm);
 		}
 */
-		start=clock();
-		PetscPrintf(PETSC_COMM_WORLD,"\n\n------------\nStart the %d times Resolution \n-------------\n\n",i);
-		ierr = MyKSPSolve(ksp, c, x,com); CHKERRQ(ierr);
-		end=clock();
-  		cost_time = (double)(end - start)/CLOCKS_PER_SEC;
-		KSPGetConvergedReason(ksp,&reason);
-		if (reason<0 && !gft_flg) {
-			PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Divergence in acceptable iteration steps.\n", i);
-		}
-		else if(reason < 0 && gft_flg){
-			int gft = 999;
-			mpi_lsa_com_type_send(com,&gft);
-			PetscPrintf(PETSC_COMM_WORLD, "\n\n\nERROR >>> GMRES Simulated to be failure, so send the signal 999 \n");
-		}
-		else {
-			KSPGetIterationNumber(ksp,&its);
+
+        if (i == 1){
+
+        	start=clock();
+			PetscPrintf(PETSC_COMM_WORLD,"\n\n------------\nStart the %d times Resolution \n-------------\n\n",i);
+			ierr = MyKSPSolve(ksp, c, x,com); CHKERRQ(ierr);
+			end=clock();
+  			cost_time = (double)(end - start)/CLOCKS_PER_SEC;
+			KSPGetConvergedReason(ksp,&reason);
+			if (reason<0 && !gft_flg) {
+				PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Divergence in acceptable iteration steps.\n", i);
+			}
+			else if(reason < 0 && gft_flg){
+				int gft = 999;
+				mpi_lsa_com_type_send(com,&gft);
+				PetscPrintf(PETSC_COMM_WORLD, "\n\n\nERROR >>> GMRES Simulated to be failure, so send the signal 999 \n");
+			}
+			else {
+				KSPGetIterationNumber(ksp,&its);
 		//	mpi_lsa_com_type_send(com,&i);
-			PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Convergence in %f seconds / %d iterations. \n", i, cost_time, its);
+				PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Convergence in %f seconds / %d iterations. \n", i, cost_time, its);
 		
-		}
+			}
+        }
+
+        else{
+			start=clock();
+			VecCopy(c, ksp->vec_rhs);
+			KSPSetInitialGuessNonzero(ksp, PETSC_FALSE);
+
+			if(!GmresLSAPrecond(com,ksp))
+    		{
+	   			PetscPrintf(PETSC_COMM_WORLD,"\n@@@>>>Preconditioning of LS method in: %d iterations\n\n",ksp->its);
+    		}
+
+    		VecCopy(ksp->vec_sol, x);
+    		KSPSetInitialGuessNonzero(ksp, PETSC_TRUE);
+
+			PetscPrintf(PETSC_COMM_WORLD,"\n\n------------\nStart the %d times Resolution \n-------------\n\n",i);
+			ierr = MyKSPSolve(ksp, c, x,com); CHKERRQ(ierr);
+			end=clock();
+  			cost_time = (double)(end - start)/CLOCKS_PER_SEC;
+			KSPGetConvergedReason(ksp,&reason);
+			if (reason<0 && !gft_flg) {
+				PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Divergence in acceptable iteration steps.\n", i);
+			}
+			else if(reason < 0 && gft_flg){
+				int gft = 999;
+				mpi_lsa_com_type_send(com,&gft);
+				PetscPrintf(PETSC_COMM_WORLD, "\n\n\nERROR >>> GMRES Simulated to be failure, so send the signal 999 \n");
+			}
+			else {
+				KSPGetIterationNumber(ksp,&its);
+		//	mpi_lsa_com_type_send(com,&i);
+				PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Convergence in %f seconds / %d iterations. \n", i, cost_time, its);
+		
+			}
+
+        }
 
 		VecView(ksp->vec_rhs,PETSC_VIEWER_STDOUT_WORLD);
 	}

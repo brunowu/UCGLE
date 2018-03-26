@@ -12,6 +12,7 @@
 #include "kspsolve.h"
 #include <time.h>
 #include <unistd.h>
+//#include "gmres_precond.c"
 
 #include "../../Libs/vec_generate.h"
 

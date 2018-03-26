@@ -53,10 +53,10 @@ MDIR=./data
 #MAT = EBMG_matrix_nb_500_500x500_33036_nnz
 #MAT = matline_nb_6_1800x1800_19216_nnz
 #MAT = matline_nb_6_1800x1800_18933_nnzK
-MAT = utm300.mtx_300x300_3155nnz
+MAT = utm300_300x300.dat
 #MAT = matline_nb_3_900x900_9468_nnz
 #MAT = matblock_nb_3_900x900_15775_nnz
-NTIMES = 3
+NTIMES = 1
 #################       MPI Flags        ########################
 
 GMRES_NB_NODES=1
