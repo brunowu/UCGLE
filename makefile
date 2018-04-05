@@ -57,8 +57,11 @@ MDIR=./data
 MAT = utm300.mtx_300x300_3155nnz
 #MAT = matline_nb_3_900x900_9468_nnz
 #MAT = matblock_nb_3_900x900_15775_nnz
+
 NTIMES = 3
 INITIAL_GUESS_SEQ_RHS = -initial_guess_seq_rhs
+INITIAL_GUESS_POWER = 5
+
 
 #################       MPI Flags        ########################
 
@@ -86,7 +89,7 @@ PC_TYPE = none
 #GMRES_FT = -GMRES_FT
 GMRES_FLAGS= -ksp_rtol 1e-100 -ksp_divtol 1e1000 -ksp_max_it ${KSP_MAX_ITS} -pc_type ${PC_TYPE} -ksp_atol ${GMRES_PRECISION} -ksp_gmres_restart ${GMRES_RESTART}\
 		${GMRES_MONITOR} ${LSA_GMRES} ${GMRES_NB_NODES} -ntimes ${NTIMES} ${CUDA_TYPE}\
-		${GMRES_FT} ${INITIAL_GUESS_SEQ_RHS}
+		${GMRES_FT} ${INITIAL_GUESS_SEQ_RHS} -initial_guess_power ${INITIAL_GUESS_POWER}
 
 #		-log_view
 

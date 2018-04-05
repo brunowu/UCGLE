@@ -101,9 +101,9 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 			VecCopy(c, ksp->vec_rhs);
 			KSPSetInitialGuessNonzero(ksp, PETSC_FALSE);
 
-			if(!GmresLSAPrecond(com,ksp))
+			if(!LSInitialGuess(com,ksp))
     		{
-	   			PetscPrintf(PETSC_COMM_WORLD,"\n@@@>>>Preconditioning of LS method in: %d iterations\n\n",ksp->its);
+	   			PetscPrintf(PETSC_COMM_WORLD,"\n@@@>>>Generating the initial guess vector using LS method based previous resolution\n\n",ksp->its);
     		}
 
     		VecCopy(ksp->vec_sol, x);
