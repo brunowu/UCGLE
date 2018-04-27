@@ -17,9 +17,6 @@ int main(int argc, char ** argv){
 	int	non_lsa, size, rank;
 	/* init of MPI and MPI Utils */
 	MPI_Init(&argc,&argv);
-  //      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//	MPI_Comm_size(MPI_COMM_WORLD, &size);
-//	PetscPrintf("MPI WORLD SIZE = %d \n", size);
 	non_lsa = mpi_lsa_init(argc,argv,&com);
 	MPI_Barrier(MPI_COMM_WORLD);
 	ierr=SlepcInitialize(&argc,&argv,(char *)0,help);       CHKERRQ(ierr);
@@ -32,7 +29,7 @@ int main(int argc, char ** argv){
 	PETSC_COMM_WORLD=com.com_group; // give group communicator as main petsc communicator
 //	ierr=SlepcInitialize(&argc,&argv,(char *)0,help);	CHKERRQ(ierr);
 
-//	PetscPrintf(com.com_world,"]> Initializing PETSc/SLEPc\n");
+	PetscPrintf(com.com_world,"]> Initializing PETSc/SLEPc\n");
 
 /*	VecCreate()*/
 
@@ -43,22 +40,38 @@ int main(int argc, char ** argv){
 	MPI_Barrier(MPI_COMM_WORLD);
 	PetscPrintf(com.com_world,"]> Opening input data files\n");
 	MPI_Barrier(MPI_COMM_WORLD);
-	
-	read_matrix_vector(&A, &v,(MPI_Comm*) &com.com_world);
-	Af=A;
-	vf=v;
 
-	PetscOptionsName("-Aclx","Convert complex matrix to real","PetscAclx",&flag);
-	if (flag) {
-		ierr= real2complexMat(&A,&Af);CHKERRQ(ierr);
-		ierr= real2complexVec(&v, &vf);CHKERRQ(ierr);
+	PetscInt matsize;
+
+
+	if(com.color_group==GMRES_GR || (com.color_group==ARNOLDI_GR && nols!=0)){
+        	read_matrix_vector(&A, &v,(MPI_Comm*) &com.color_group);
+		MatGetSize(A,NULL, &matsize);
+	}	
+	
+        MPI_Bcast(&matsize, 1, MPIU_INT,0, MPI_COMM_WORLD);
+//
+	MPI_Barrier(MPI_COMM_WORLD);
+
+	 if(com.color_group==GMRES_GR || (com.color_group==ARNOLDI_GR && nols!=0)){
+		Af=A;
+		vf=v;
+
+		PetscOptionsName("-Aclx","Convert complex matrix to real","PetscAclx",&flag);
+		if (flag) {
+			ierr= real2complexMat(&A,&Af);CHKERRQ(ierr);
+			ierr= real2complexVec(&v, &vf);CHKERRQ(ierr);
+		}
+
+		A=Af;
+		vf=v;
+        } else if((com.color_group==FATHER_GR && nols!=0) || (com.color_group==LS_GR && nols!=0)){
+		VecCreate(PETSC_COMM_WORLD,&v);
+		VecSetSizes(v,PETSC_DECIDE,matsize);
+		VecSetFromOptions(v);
 	}
 
-	A=Af;
-	vf=v;
-
-
-	ierr=PetscOptionsEnd();CHKERRQ(ierr);
+		ierr=PetscOptionsEnd();CHKERRQ(ierr);
 
 	/* now that we got the data, groups will exchange information on data repartition */
 
@@ -71,7 +84,6 @@ int main(int argc, char ** argv){
 	else if(nols==0) PetscPrintf(com.com_world,"]> not using LSA preconditionning %d\n",nols);
 	
 	PetscOptionsHasName(NULL,NULL,"-GMRES_FT",&gft_flg);
-	
 	
 
 		if(com.color_group==GMRES_GR){
@@ -91,33 +103,13 @@ int main(int argc, char ** argv){
 		}
 
 
-/*
-	else{
-
-
-               if(com.color_group==GMRES_GR){
-                        PetscPrintf(com.com_group,"]> Launching GMRES\n");
-                 //       launchGMRES(&com, &v, &A);
-                }else if(com.color_group==ARNOLDI_GR && nols!=0){
-                        PetscPrintf(com.com_group,"]> Launching Arnoldi\n");
-                        launchGMRES(&com, &v, &A);
-                        }
-                else if(com.color_group==FATHER_GR && nols!=0){
-                        PetscPrintf(com.com_group,"]> Launching Father\n");
-                        Father(&com,&v);
-                } else if(com.color_group==LS_GR && nols!=0){
-                        VecGetSize(v,&vsize);
-                        PetscPrintf(com.com_group,"]> Launching LS\n");
-                        LSQR(&com,&vsize);
-                }
-
-
-	}
-*/
-
         MPI_Barrier(MPI_COMM_WORLD);
         VecDestroy(&v);
-        MatDestroy(&A);
+
+
+	if(com.color_group==GMRES_GR || (com.color_group==ARNOLDI_GR && nols!=0)){
+        	MatDestroy(&A);
+	}
 
         /* free petsc arrays before finalizing slepc */
         PetscFree(com.in_received_buffer);

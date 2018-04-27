@@ -58,7 +58,7 @@ MAT = utm300.mtx_300x300_3155nnz
 #MAT = matline_nb_3_900x900_9468_nnz
 #MAT = matblock_nb_3_900x900_15775_nnz
 
-NTIMES = 3
+NTIMES = 1
 INITIAL_GUESS_SEQ_RHS = -initial_guess_seq_rhs
 INITIAL_GUESS_POWER = 5
 
