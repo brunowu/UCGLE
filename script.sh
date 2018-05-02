@@ -7,9 +7,10 @@
 
 #SBATCH --time=02:30:00
 
-#SBATCH -n 4
+#SBATCH -N 1
+#SBATCH -n 6
 
 
-make runexec
-
+#make runexec
+make runsmg2s
 

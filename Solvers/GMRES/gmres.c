@@ -8,7 +8,7 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 	KSPConvergedReason reason;
 	PetscInt its, nols, ntimes;
 	int i, size;
-	PetscBool flagls, flagtimes, gft_flg;
+	PetscBool flagls, flagtimes, gft_flg, guess_flg;
 	double cost_time;
 	clock_t start, end;
 
@@ -18,6 +18,8 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 
 	PetscReal norm;
 	PetscOptionsHasName(NULL,NULL,"-GMRES_FT",&gft_flg);
+	
+	PetscOptionsHasName(NULL,NULL,"-initial_guess_seq_rhs", &guess_flg);
 	
 	VecGetSize(*b, &size);
 	VecDuplicate(*b, &c);
@@ -43,7 +45,11 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 
                         VecCopy(*b,c);
                         VecNorm(c, NORM_2,&norm);
-                        VecScale(c, 0.01/norm);
+                        VecScale(c, 1/norm);
+
+
+//                        VecView(c,PETSC_VIEWER_STDOUT_WORLD);
+
 /*
 		if(i==1){
 			VecCopy(*b,c);
@@ -83,17 +89,26 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
         }
 
         else{
+			VecCopy(*b,c);
+			generate_random_seed_vector(size, -2,10, i,&c);
+			VecNorm(c, NORM_2,&norm);
+			VecScale(c, 1/norm);
+		
 			start=clock();
+
+		if(guess_flg){
+
 			VecCopy(c, ksp->vec_rhs);
 			KSPSetInitialGuessNonzero(ksp, PETSC_FALSE);
 
-			if(!GmresLSAPrecond(com,ksp))
+			if(!LSInitialGuess(com,ksp))
     		{
-	   			PetscPrintf(PETSC_COMM_WORLD,"\n@@@>>>Preconditioning of LS method in: %d iterations\n\n",ksp->its);
+	   			PetscPrintf(PETSC_COMM_WORLD,"\n@@@>>>Generating the initial guess vector using LS method based previous resolution\n\n",ksp->its);
     		}
 
     		VecCopy(ksp->vec_sol, x);
     		KSPSetInitialGuessNonzero(ksp, PETSC_TRUE);
+		}
 
 			PetscPrintf(PETSC_COMM_WORLD,"\n\n------------\nStart the %d times Resolution \n-------------\n\n",i);
 			ierr = MyKSPSolve(ksp, c, x,com); CHKERRQ(ierr);
@@ -117,7 +132,7 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 
         }
 
-		VecView(ksp->vec_rhs,PETSC_VIEWER_STDOUT_WORLD);
+//		VecView(ksp->vec_rhs,PETSC_VIEWER_STDOUT_WORLD);
 	}
 
 			int exit_type=666;

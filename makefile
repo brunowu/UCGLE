@@ -21,7 +21,9 @@ ALL:  blib exec
 #compilation flags
 DIRS    = Libs Tuning Solvers
 EXEC    = hyperh
-CFLAGS	= -O0 -O3
+
+CFLAGS	= -O0 -O3 -L/home/xinzhewu/workstations/SMG2Spy/SMG2S/install/lib -I/home/xinzhewu/workstations/SMG2Spy/SMG2S/install/include -lsmg2s2c
+LDFLAGS = -L${SMG2S}/lib
 #-I${PETSC_DIR}/src/ksp/ksp/impls/gmres/fgmres/
 
 CLEANFILES  = ${EXEC}
@@ -53,14 +55,21 @@ MDIR=./data
 #MAT = EBMG_matrix_nb_500_500x500_33036_nnz
 #MAT = matline_nb_6_1800x1800_19216_nnz
 #MAT = matline_nb_6_1800x1800_18933_nnzK
-MAT = utm300_300x300.dat
+#MAT = utm300_300x300.dat
+#MAT = utm300.mtx_300x300_3155nnz
 #MAT = matline_nb_3_900x900_9468_nnz
 #MAT = matblock_nb_3_900x900_15775_nnz
+
 NTIMES = 1
+INITIAL_GUESS_SEQ_RHS = -initial_guess_seq_rhs
+INITIAL_GUESS_POWER = 10
+#################      SMG2S Flags       ########################
+SMG2S = -smg2s
+SMG2S_FLAGS = ${SMG2S}
 #################       MPI Flags        ########################
 
-GMRES_NB_NODES=1
-ARNOLDI_NB_NODES=1
+GMRES_NB_NODES=2
+ARNOLDI_NB_NODES=2
 
 MPI_NODES = ${shell echo ${GMRES_NB_NODES}+${ARNOLDI_NB_NODES}+ 2 | bc}
 LSA_GMRES =-lsa_gmres
@@ -70,7 +79,7 @@ LSA_ARNOLDI=-lsa_arnoldi
 #MPI_NODES = 2
 #################       GMRES Flags       ########################
 
-RESTART_MAX =150
+RESTART_MAX =15
 GMRES_PRECISION= 1e-10
 GMRES_RESTART= ${RESTART_MAX}
 GMRES_MONITOR= -ksp_monitor_true_residual
@@ -83,7 +92,8 @@ PC_TYPE = none
 #GMRES_FT = -GMRES_FT
 GMRES_FLAGS= -ksp_rtol 1e-100 -ksp_divtol 1e1000 -ksp_max_it ${KSP_MAX_ITS} -pc_type ${PC_TYPE} -ksp_atol ${GMRES_PRECISION} -ksp_gmres_restart ${GMRES_RESTART}\
 		${GMRES_MONITOR} ${LSA_GMRES} ${GMRES_NB_NODES} -ntimes ${NTIMES} ${CUDA_TYPE}\
-		${GMRES_FT}
+		${GMRES_FT} ${INITIAL_GUESS_SEQ_RHS} -initial_guess_power ${INITIAL_GUESS_POWER}
+
 #		-log_view
 
 #################       ERAM Flags         ########################
@@ -114,7 +124,7 @@ LS_HANG_TIME=  100000
 LS_FLAGS = -ksp_ls_power ${LS_POWER} ${LS_NO_USE_LS}-ksp_ls_m_hang ${LS_HANG_IT} -ksp_ls_timing ${LS_HANG_TIME}  -ksp_ls_k_param ${LS_POLY_APPL} -ksp_ls_nopc ${LS_PC_USE} -ksp_ls_latency ${LS_LATENCY} ${LS_CEXPORT} ${LS_LOAD} ${LS_LOAD_FILE}
 #################      Flags Combinations      #####################
 
-GLSA_FLAGS = ${GMRES_FLAGS} ${ARNOLDI_FLAGS} ${LS_FLAGS} ${DEBUG_KSP_VIEW} ${RUN_FLAGS}
+GLSA_FLAGS = ${GMRES_FLAGS} ${ARNOLDI_FLAGS} ${LS_FLAGS} ${DEBUG_KSP_VIEW} ${RUN_FLAGS} ${SMG2S_FLAGS}
 
 ##################################################################
 ##################   Compilation rules     #######################
@@ -128,7 +138,7 @@ blib:
 	@for a in $(DIRS); do \
         if [ -d $$a ]; then \
         echo "processing folder $$a"; \
-        $(MAKE) -C $$a; \
+	$(MAKE) -C $$a;\
         fi; \
         done;
 	@echo "$$a Done!"
@@ -177,6 +187,9 @@ effacer :
 runexec:
 	-@${MPIEXEC} -np ${MPI_NODES} ${DEBUG_VALGRIND} ./hyperh  ${GLSA_FLAGS} \
 	-mfile ${MDIR}/${MAT}
+
+runsmg2s:
+	-@${MPIEXEC} -np ${MPI_NODES} ${DEBUG_VALGRIND} ./hyperh  ${GLSA_FLAGS}
 
 runmatBlock:
 	-@${MPIEXEC} -np ${MPI_NODES} ${DEBUG_VALGRIND} ./hyperh  ${GLSA_FLAGS} \

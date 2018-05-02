@@ -51,7 +51,7 @@ PetscErrorCode MyKSPSolve_FGMRES(KSP ksp,com_lsa * com)
   while (!ksp->reason && ksp->its % max_k == 0) {
     if(!GmresLSAPrecond(com,ksp))
     {
-	PetscPrintf(PETSC_COMM_WORLD,"\n@@@>>>Preconditioning of LS method in: %d iterations\n\n",ksp->its);
+	   PetscPrintf(PETSC_COMM_WORLD,"\n@@@>>>Preconditioning of LS method in: %d iterations\n\n",ksp->its);
     }
 
 

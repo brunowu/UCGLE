@@ -17,6 +17,8 @@
 #include "../../Libs/vec_generate.h"
 
 #include "gmres_precond.h"
+#include "initial_guess.h"
+
 
 PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A);
 
