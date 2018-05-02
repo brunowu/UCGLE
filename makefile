@@ -56,16 +56,26 @@ MDIR=./data
 #MAT = matline_nb_6_1800x1800_19216_nnz
 #MAT = matline_nb_6_1800x1800_18933_nnzK
 #MAT = utm300_300x300.dat
+<<<<<<< HEAD
 #MAT = utm300.mtx_300x300_3155nnz
+=======
+MAT = utm300.mtx_300x300_3155nnz
+>>>>>>> e26a8fff0a5f33f8210759c863eb0da8b806ad37
 #MAT = matline_nb_3_900x900_9468_nnz
 #MAT = matblock_nb_3_900x900_15775_nnz
 
 NTIMES = 1
 INITIAL_GUESS_SEQ_RHS = -initial_guess_seq_rhs
+<<<<<<< HEAD
 INITIAL_GUESS_POWER = 10
 #################      SMG2S Flags       ########################
 SMG2S = -smg2s
 SMG2S_FLAGS = ${SMG2S}
+=======
+INITIAL_GUESS_POWER = 5
+
+
+>>>>>>> e26a8fff0a5f33f8210759c863eb0da8b806ad37
 #################       MPI Flags        ########################
 
 GMRES_NB_NODES=2

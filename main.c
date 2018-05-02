@@ -17,9 +17,6 @@ int main(int argc, char ** argv){
 	int	non_lsa, size, rank;
 	/* init of MPI and MPI Utils */
 	MPI_Init(&argc,&argv);
-  //      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//	MPI_Comm_size(MPI_COMM_WORLD, &size);
-//	PetscPrintf("MPI WORLD SIZE = %d \n", size);
 	non_lsa = mpi_lsa_init(argc,argv,&com);
 	MPI_Barrier(MPI_COMM_WORLD);
 	ierr=SlepcInitialize(&argc,&argv,(char *)0,help);       CHKERRQ(ierr);
@@ -50,8 +47,14 @@ int main(int argc, char ** argv){
 
 	PetscInt matsize;
 
+<<<<<<< HEAD
 	if(com.color_group==GMRES_GR || (com.color_group==ARNOLDI_GR && nols!=0)){
         	read_matrix_vector(&A, &v, &com.com_group);
+=======
+
+	if(com.color_group==GMRES_GR || (com.color_group==ARNOLDI_GR && nols!=0)){
+        	read_matrix_vector(&A, &v,(MPI_Comm*) &com.color_group);
+>>>>>>> e26a8fff0a5f33f8210759c863eb0da8b806ad37
 		MatGetSize(A,NULL, &matsize);
 	}	
 	

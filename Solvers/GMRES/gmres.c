@@ -45,7 +45,11 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 
                         VecCopy(*b,c);
                         VecNorm(c, NORM_2,&norm);
+<<<<<<< HEAD
                         VecScale(c, 1/norm);
+=======
+                        VecScale(c, 0.01/norm);
+>>>>>>> e26a8fff0a5f33f8210759c863eb0da8b806ad37
 
 
 //                        VecView(c,PETSC_VIEWER_STDOUT_WORLD);
@@ -92,7 +96,11 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 			VecCopy(*b,c);
 			generate_random_seed_vector(size, -2,10, i,&c);
 			VecNorm(c, NORM_2,&norm);
+<<<<<<< HEAD
 			VecScale(c, 1/norm);
+=======
+			VecScale(c, 0.01/norm);
+>>>>>>> e26a8fff0a5f33f8210759c863eb0da8b806ad37
 		
 			start=clock();
 
