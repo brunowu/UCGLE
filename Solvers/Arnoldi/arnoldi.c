@@ -12,7 +12,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	   we choosed to fix it because mallocs weren't working properly */
 	PetscScalar eigenvalues[500], ei, er;
 	PetscReal re,im,vnorm;
-	PetscInt eigen_nb,j,i,size, taille;
+	PetscInt eigen_nb,j,i,size, taille, nb;
 	uintptr_t one=1;
 	Vec initialv,nullv;
 	PetscBool flag,data_load,data_export,continuous_export,load_any, aft_flg;
@@ -136,12 +136,13 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 			EPSSetDimensions(eps, 10, 100+(i-1)*20,200);
 			PetscPrintf(PETSC_COMM_WORLD,"\n\ni = %d \n\n",exit_type);
 		}
+
 		
 		ierr=EPSSolve(eps);CHKERRQ(ierr);
 		
-		ierr=EPSGetConverged(eps,&eigen_nb);CHKERRQ(ierr);
+		ierr=EPSGetConverged(eps,&nb);CHKERRQ(ierr);
 		
-		for(j=0;j<eigen_nb;j++){
+		for(j=0;j<nb;j++){
 			ierr = EPSGetEigenvalue(eps,j,&er,&ei);CHKERRQ(ierr);
 			#ifdef PETSC_USE_COMPLEX
 			  re=PetscRealPart(er);
@@ -152,6 +153,7 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 			#endif
 			eigenvalues[j]=(PetscScalar)re+PETSC_i*(PetscScalar)im;
 		}
+
 		if( eigen_nb != 0){
 			mpi_lsa_com_array_send(com, &eigen_nb, eigenvalues);
 			if(!mpi_lsa_com_type_recv(com,&exit_type)){
@@ -235,5 +237,5 @@ else{
 }
 
 
-return 0;
+return ierr;
 }

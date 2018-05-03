@@ -39,6 +39,7 @@ MDIR=./data
 
 #################       Debug flags    ########################
 
+#DEBUG_VALGRIND = valgrind
 #DEBUG_VALGRIND = valgrind --tool=memcheck -q
 #DEBUG_KSP_VIEW = -ksp_view
 
@@ -55,7 +56,7 @@ MDIR=./data
 #MAT = EBMG_matrix_nb_500_500x500_33036_nnz
 #MAT = matline_nb_6_1800x1800_19216_nnz
 #MAT = matline_nb_6_1800x1800_18933_nnzK
-#MAT = utm300_300x300.dat
+MAT = utm300_300x300.dat
 #MAT = utm300.mtx_300x300_3155nnz
 #MAT = matline_nb_3_900x900_9468_nnz
 #MAT = matblock_nb_3_900x900_15775_nnz
@@ -79,7 +80,7 @@ LSA_ARNOLDI=-lsa_arnoldi
 #MPI_NODES = 2
 #################       GMRES Flags       ########################
 
-RESTART_MAX =15
+RESTART_MAX =40
 GMRES_PRECISION= 1e-10
 GMRES_RESTART= ${RESTART_MAX}
 GMRES_MONITOR= -ksp_monitor_true_residual
@@ -100,10 +101,10 @@ GMRES_FLAGS= -ksp_rtol 1e-100 -ksp_divtol 1e1000 -ksp_max_it ${KSP_MAX_ITS} -pc_
 
 ARNOLDI_PRECISION= 1e-1
 ARNOLDI_NBEIGEN=3
-#ARNOLDI_MONITOR = -eps_monitor_conv
+ARNOLDI_MONITOR = -eps_monitor_conv
 #ARNOLDI_FT_SIM = -ArnoldiFT 4
 
-ARNOLDI_FLAGS= -eps_ncv 60 -eps_type arnoldi -eps_true_residual -eps_largest_imaginary -eps_nev ${ARNOLDI_NBEIGEN} -eps_tol ${ARNOLDI_PRECISION} \
+ARNOLDI_FLAGS= -eps_ncv 10 -eps_type arnoldi -eps_true_residual -eps_largest_imaginary -eps_nev ${ARNOLDI_NBEIGEN} -eps_tol ${ARNOLDI_PRECISION} \
                 ${ARNOLDI_MONITOR} ${LSA_ARNOLDI} ${ARNOLDI_NB_NODES} -eps_max_it 50 \
 		${ARNOLDI_FT_SIM} 
 #################       LS Flags           ########################

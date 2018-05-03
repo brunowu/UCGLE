@@ -75,8 +75,12 @@ PetscErrorCode mat_generate(Mat * A, MPI_Comm comm){
 
         for(p = 0; p < size_col; p++){
                 j[p] = cols[p];
-                a[p] = real[p] + PETSC_i * imag[p];
-        }
+                a[p] = (PetscReal) real[p];
+//		printf("!!!!! p = %d, real[%d] = %f, imag[%d] = %f\n", p, p, real[p], p, imag[p]);
+
+//		a[p] = (PetscScalar) real[p] + PETSC_i * (PetscScalar)imag[p];
+//        	printf("a[%d] = %f + i%f\n", p, PetscRealPart(a[p]), PetscImaginaryPart(a[p]));
+	}
 
 
         MatCreate(PETSC_COMM_WORLD, A);
@@ -86,8 +90,10 @@ PetscErrorCode mat_generate(Mat * A, MPI_Comm comm){
 //	free(rows); free(cols); free(real); free(imag);
 //	PetscFree(i); PetscFree(j); PetscFree(a);
 
-	//ReleaseParMatrixSparseComplexDoubleInt(&m);
-//	ReleaseNilpotencyInt(&n);
+//	ReleaseParMatrixSparseComplexDoubleInt(&m);
+	ReleaseNilpotencyInt(&n);
+	
+	return ierr;
 
 }
 
