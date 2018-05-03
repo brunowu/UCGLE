@@ -17,7 +17,7 @@ PetscErrorCode mat_generate(Mat * A, MPI_Comm comm){
 	ierr= PetscOptionsHasName(NULL,NULL,"-smg2s",&flgsmg2s);CHKERRQ(ierr);
 	ierr= PetscOptionsGetInt(NULL,NULL,"-lbandwidth",&lbandwidth,&flglb);CHKERRQ(ierr);
         ierr= PetscOptionsGetInt(NULL,NULL,"-size",&size,&flgsize);CHKERRQ(ierr);
-        ierr= PetscOptionsGetInt(NULL,NULL,"-continous1",&size,&flgno);CHKERRQ(ierr);
+        ierr= PetscOptionsGetInt(NULL,NULL,"-continous1",&nbOne,&flgno);CHKERRQ(ierr);
 	ierr=PetscOptionsGetString(NULL,PETSC_NULL,"-sptr",spectra,PETSC_MAX_PATH_LEN-1,&flgsptr);CHKERRQ(ierr);
 	if(flgsmg2s) PetscPrintf(comm, "Info ]> Using SMG2S to generate test matrices\n");
 	if(!flglb){
@@ -76,9 +76,6 @@ PetscErrorCode mat_generate(Mat * A, MPI_Comm comm){
         for(p = 0; p < size_col; p++){
                 j[p] = cols[p];
                 a[p] = (PetscReal) real[p] + PETSC_i * (PetscReal) imag[p];
-
-//		a[p] = (PetscScalar) real[p] + PETSC_i * (PetscScalar)imag[p];
-//        	printf("a[%d] = %f + i%f\n", p, PetscRealPart(a[p]), PetscImaginaryPart(a[p]));
 	}
 
 

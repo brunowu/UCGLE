@@ -66,7 +66,11 @@ INITIAL_GUESS_SEQ_RHS = -initial_guess_seq_rhs
 INITIAL_GUESS_POWER = 10
 #################      SMG2S Flags       ########################
 SMG2S = -smg2s
-SMG2S_FLAGS = ${SMG2S}
+LBANDWIDTH = -lbandwidth 4
+SIZE=-size 200
+NBONE=-continous1 3
+#SPECTRA= -sptr vector.txt
+SMG2S_FLAGS = ${SMG2S} ${LBANDWIDTH} ${SIZE} ${NBONE} ${SPECTRA}
 #################       MPI Flags        ########################
 
 GMRES_NB_NODES=2
