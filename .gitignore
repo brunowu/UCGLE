@@ -23,6 +23,7 @@
 # Executables
 *.exe
 *.out
+*.err
 *.app
 *.i*86
 *.x86_64
@@ -31,3 +32,4 @@
 # Debug files
 *.dSYM/
 *.su
+

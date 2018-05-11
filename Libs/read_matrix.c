@@ -14,6 +14,11 @@ PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int *comm){
 
 	ierr= PetscOptionsHasName(NULL,NULL,"-smg2s",&flgsmg2s);CHKERRQ(ierr);
 	ierr=PetscOptionsGetString(NULL,PETSC_NULL,"-mfile",filea,PETSC_MAX_PATH_LEN-1,&flaga);CHKERRQ(ierr);
+
+	PetscLogDouble st, ed;
+
+	PetscTime(&st);
+	
 	if (!flaga) {
 		if(!flgsmg2s){
 		        sprintf(err,"Error : mfile is not properly set -> %s\n",filea);
@@ -34,8 +39,13 @@ PetscErrorCode read_matrix_vector(Mat * A, Vec * v, int *comm){
 
 	}
 
+	PetscTime(&ed);
+
+	PetscPrintf(*comm, "In group: The test matrix generation/loading total time is %f \n",ed-st);
 	/* read matrix file */
 	ierr=MatGetSize(*A,&size,&sizea);CHKERRQ(ierr);
+
+	ierr=PetscOptionsGetString(NULL,PETSC_NULL,"-vfile",fileb,PETSC_MAX_PATH_LEN-1,&flagb);CHKERRQ(ierr);
 
 	if (!flagb) {
 		/* the user did not provide a vector, so generate it*/

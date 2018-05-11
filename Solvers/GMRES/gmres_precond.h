@@ -12,7 +12,7 @@
 #include <unistd.h>
 
 #ifndef EIGEN_ALL
-#define EIGEN_ALL 100
+#define EIGEN_ALL 1000
 #endif
 
 #ifndef LS_POWER

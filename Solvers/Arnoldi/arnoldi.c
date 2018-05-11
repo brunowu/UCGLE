@@ -25,6 +25,8 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 	KSPConvergedReason reason;
 	PetscInt its;
 
+	PetscInt nev, ncv, mpd;
+
 	Vec sol_tmp;
 
 	char  ls_load_path[PETSC_MAX_PATH_LEN];
@@ -119,8 +121,8 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		  load_any=PETSC_FALSE;
 		  data_load=PETSC_TRUE;
 		}
-		ierr = VecAssemblyBegin(initialv);CHKERRQ(ierr);
-	  	ierr = VecAssemblyEnd(initialv);CHKERRQ(ierr);
+//		ierr = VecAssemblyBegin(initialv);CHKERRQ(ierr);
+//	  	ierr = VecAssemblyEnd(initialv);CHKERRQ(ierr);
 
 		if(count <= aft){
 		if(!(data_load^=load_any)){
@@ -133,7 +135,16 @@ PetscErrorCode Arnoldi(com_lsa * com, Mat * A, Vec  *v){
 		}
 		if(exit_type !=0 && exit_type !=999 && exit_type !=666){
 			int i = exit_type;
+			nev = 10;
+			mpd = 200;
+			if(100 + (i-1)*20 < nev+mpd ){
+				ncv = 100 +  (i-1)*20;
+			}
+			else {ncv = mpd;}
 			EPSSetDimensions(eps, 10, 100+(i-1)*20,200);
+//                        EPSSetDimensions(eps, nev, ncv,mpd);
+//			 EPSSetDimensions(eps, 10, 100,200);
+
 			PetscPrintf(PETSC_COMM_WORLD,"\n\ni = %d \n\n",exit_type);
 		}
 

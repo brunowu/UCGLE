@@ -61,20 +61,20 @@ MAT = utm300_300x300.dat
 #MAT = matline_nb_3_900x900_9468_nnz
 #MAT = matblock_nb_3_900x900_15775_nnz
 
-NTIMES = 1
-INITIAL_GUESS_SEQ_RHS = -initial_guess_seq_rhs
-INITIAL_GUESS_POWER = 10
+NTIMES = 10
+#INITIAL_GUESS_SEQ_RHS = -initial_guess_seq_rhs
+INITIAL_GUESS_POWER = 20
 #################      SMG2S Flags       ########################
 SMG2S = -smg2s
 LBANDWIDTH = -lbandwidth 4
-SIZE=-size 200
+SIZE=-size 50000
 NBONE=-continous1 3
-#SPECTRA= -sptr vector.txt
+SPECTRA= -sptr ./test/vector.txt
 SMG2S_FLAGS = ${SMG2S} ${LBANDWIDTH} ${SIZE} ${NBONE} ${SPECTRA}
 #################       MPI Flags        ########################
 
-GMRES_NB_NODES=2
-ARNOLDI_NB_NODES=2
+GMRES_NB_NODES=4
+ARNOLDI_NB_NODES=4
 
 MPI_NODES = ${shell echo ${GMRES_NB_NODES}+${ARNOLDI_NB_NODES}+ 2 | bc}
 LSA_GMRES =-lsa_gmres
@@ -84,12 +84,14 @@ LSA_ARNOLDI=-lsa_arnoldi
 #MPI_NODES = 2
 #################       GMRES Flags       ########################
 
-RESTART_MAX =40
+RESTART_MAX =50
 GMRES_PRECISION= 1e-10
 GMRES_RESTART= ${RESTART_MAX}
 GMRES_MONITOR= -ksp_monitor_true_residual
 KSP_MAX_ITS = 20000
 PC_TYPE = none
+#PC_TYPE=sor
+#PC_TYPE=sor
 #PC_TYPE=jacobi -pc_jacobi_type rowmax -pc_jacobi_abs
 #PC_TYPE = asm -pc_asm_block 2 -pc_asm_type none
 #PC_TYPE = sor -pc_sor_its 5 -pc_sor_omega 0.179
@@ -97,29 +99,28 @@ PC_TYPE = none
 #GMRES_FT = -GMRES_FT
 GMRES_FLAGS= -ksp_rtol 1e-100 -ksp_divtol 1e1000 -ksp_max_it ${KSP_MAX_ITS} -pc_type ${PC_TYPE} -ksp_atol ${GMRES_PRECISION} -ksp_gmres_restart ${GMRES_RESTART}\
 		${GMRES_MONITOR} ${LSA_GMRES} ${GMRES_NB_NODES} -ntimes ${NTIMES} ${CUDA_TYPE}\
-		${GMRES_FT} ${INITIAL_GUESS_SEQ_RHS} -initial_guess_power ${INITIAL_GUESS_POWER}
-
-#		-log_view
+		${GMRES_FT} ${INITIAL_GUESS_SEQ_RHS} -initial_guess_power ${INITIAL_GUESS_POWER} 
+		#-log_view
 
 #################       ERAM Flags         ########################
 
 ARNOLDI_PRECISION= 1e-1
-ARNOLDI_NBEIGEN=3
-ARNOLDI_MONITOR = -eps_monitor_conv
+ARNOLDI_NBEIGEN=5
+#ARNOLDI_MONITOR = -eps_monitor_conv
 #ARNOLDI_FT_SIM = -ArnoldiFT 4
 
-ARNOLDI_FLAGS= -eps_ncv 10 -eps_type arnoldi -eps_true_residual -eps_largest_imaginary -eps_nev ${ARNOLDI_NBEIGEN} -eps_tol ${ARNOLDI_PRECISION} \
+ARNOLDI_FLAGS= -eps_ncv 30 -eps_type arnoldi -eps_true_residual -eps_largest_imaginary -eps_nev ${ARNOLDI_NBEIGEN} -eps_tol ${ARNOLDI_PRECISION} \
                 ${ARNOLDI_MONITOR} ${LSA_ARNOLDI} ${ARNOLDI_NB_NODES} -eps_max_it 50 \
 		${ARNOLDI_FT_SIM} 
 #################       LS Flags           ########################
 
-LS_POWER = 10
-LS_POLY_APPL = 10
+LS_POWER = 5
+LS_POLY_APPL = 5
 LS_LATENCY=1
 LS_PC_USE =1
 LS_NO_USE_LS= -ksp_ls_nols
 LS_HANG_IT= 20000
-LS_HANG_TIME=  100000
+LS_HANG_TIME=  600000
 #################    LS Reusability Flags  ########################
 
 #LS_CEXPORT = -ksp_ls_cexport

@@ -239,7 +239,7 @@ int mpi_lsa_com_array_send(com_lsa * com, int * size, PetscScalar * data){
 	for(i=0;i<com->out_number;i++){
 		/* we send a portion of data */
 	       
- 		printf("Send size=%d (%d scalars) to %d \n",*size,*size/8,i);
+ 		printf("%d Send size=%d (%d scalars) to %d \n",com->rank_world, *size,*size/8,i);
 
 		MPI_Isend(com->array_out_sended_buffer,*size,MPIU_SCALAR,i,com->nbr_array_sended + i,com->out_com,&com->array_requests[i]);
 		com->out_vec_sended++;

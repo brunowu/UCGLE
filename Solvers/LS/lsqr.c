@@ -25,7 +25,7 @@ PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 	ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_eigen",&ls_eigen,&flag);CHKERRQ(ierr);
 	if(!flag) ls_eigen=EIGEN_ALL;
 	/* check the number of eigenvalues that one will receive from arnoldi */
-  ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_k_param",&eigen_max,&flag);CHKERRQ(ierr);
+	ierr=PetscOptionsGetInt(NULL,PETSC_NULL,"-ksp_ls_k_param",&eigen_max,&flag);CHKERRQ(ierr);
 	if(!flag)eigen_max=ls_eigen;
 
 	ierr=PetscOptionsGetString(NULL,PETSC_NULL,"-ksp_ls_load",load_path,PETSC_MAX_PATH_LEN,&data_load);CHKERRQ(ierr);
@@ -128,8 +128,12 @@ PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 				/* Ellipse computation */
 				ierr=ellipse(c,  d, mu+1, mu1, &c_ell, &a_ell, &d_ell, &d_reel, &info);CHKERRQ(ierr);
 				if(fabs(d_ell)<epsilon()) d_ell = 1.;
+                                        PetscPrintf(PETSC_COMM_WORLD, "!!!!!!!!fabs(a_ell) = %f\n\n", fabs(a_ell));
 				if(fabs(a_ell)<epsilon())
+				{
 					ls_eigen=0;
+//					PetscPrintf(PETSC_COMM_WORLD, "!!!!!!!!fabs(a_ell) = %f\n\n", fabs(a_ell));
+				}
 				else {
 					LSPrecond(a_ell, d_ell,c_ell,eta, &alpha, beta,
 					  delta, c, d,&mu, &ls_eigen, &ls_eigen_min, &eigen_max);
@@ -152,7 +156,7 @@ PetscErrorCode LSQR(com_lsa * com, int * vector_size){
 			result_array_size=2+3*ls_eigen;
 			mpi_lsa_com_array_send(com, &result_array_size,result_array);
                         PetscPrintf(PETSC_COMM_WORLD, "LS has sent the parameters\n");
-		}
+		} //else {                        PetscPrintf(PETSC_COMM_WORLD, "@@@@@@@@@@@> LS CAN NOT PRECPARE TO SEND TO GMRES\n\n");}
 		if(ls_eigen>1){
 		  ls_eigen=0;
 		}

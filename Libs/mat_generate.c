@@ -43,12 +43,16 @@ PetscErrorCode mat_generate(Mat * A, MPI_Comm comm){
 	struct NilpotencyInt *n;
         n = newNilpotencyInt();
         NilpType1(n, nbOne, size);
-        showNilpotencyInt(n);
+//        showNilpotencyInt(n);
 
         struct parMatrixSparseComplexDoubleInt *m;
         m = newParMatrixSparseComplexDoubleInt();
 
+	double t1  = MPI_Wtime();
 	smg2sComplexDoubleInt(m, size, n, lbandwidth ,spectra, comm);
+	double t2  = MPI_Wtime();
+
+	PetscPrintf(comm, "SMG2S time = %f\n", t2-t1);
 
         Loc_ConvertToCSRComplexDoubleInt(m);
         Loc_CSRGetRowsArraySizes(m, &size_row, &size_col);

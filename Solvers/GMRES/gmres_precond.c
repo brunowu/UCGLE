@@ -52,12 +52,13 @@ PetscErrorCode GmresLSAPrecond(com_lsa * com, KSP ksp)
     usleep(timing);
   }else return 1;
 
+
   if(nols == 0 ){
     ls_load = PETSC_FALSE;
     ls_load_any = PETSC_FALSE;
   }
 
-  if(ls_load^=ls_load_any){
+  if((ls_load^=ls_load_any)){
     if(!mpi_lsa_com_array_recv(com,&size_data,data_tmp)){
         PetscPrintf(PETSC_COMM_WORLD, "GMRES has recived data from LS\n");
 	for(k=0;k<EIGEN_ALL*2*3;k++){
@@ -77,7 +78,7 @@ PetscErrorCode GmresLSAPrecond(com_lsa * com, KSP ksp)
 	       data_tmp[k] = tmp[k];
 	    }
 	    size_data = tmp_size;
-    //    PetscPrintf(PETSC_COMM_WORLD,"\n\nnot read\n\n");
+    	    PetscPrintf(PETSC_COMM_WORLD,"\n\nLS did not receive new eigenvalues, reuse the older ones in mermory\n\n");
     }
      //PetscPrintf(PETSC_COMM_WORLD,"\n\nnot read\n\n");
   }
@@ -86,6 +87,8 @@ PetscErrorCode GmresLSAPrecond(com_lsa * com, KSP ksp)
   }
 
  
+
+
   //PetscPrintf(PETSC_COMM_WORLD,"\n\ntest_data=%d\n\n", size_data);
   
   PetscMalloc(sizeof(PetscScalar)*(PetscInt)data_tmp[0],&eta);
@@ -157,16 +160,7 @@ PetscErrorCode GmresLSAPrecond(com_lsa * com, KSP ksp)
     VecNorm(r1_tmp,NORM_2,&norm);
   }
 
-
-  if(nols!=0) {
-	Vec vmp;
-
-	ierr=VecCopy(sol_tmp,ksp->vec_sol);CHKERRQ(ierr);
-	ierr = VecDuplicate(ksp->vec_sol,&vmp);CHKERRQ(ierr);
-	VecCopy(ksp->vec_sol,vmp);
-    	mpi_lsa_com_vec_send(com,&vmp);
-	}
-
+  if(nols!=0) ierr=VecCopy(sol_tmp,ksp->vec_sol);CHKERRQ(ierr);
   ierr=PetscFree(eta);CHKERRQ(ierr);
   ierr=PetscFree(beta);CHKERRQ(ierr);
   ierr=PetscFree(delta);CHKERRQ(ierr);

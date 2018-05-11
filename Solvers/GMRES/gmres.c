@@ -90,7 +90,7 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 
         else{
 			VecCopy(*b,c);
-			generate_random_seed_vector(size, -2,10, i,&c);
+			generate_random_seed_vector(size, -10,10, i,&c);
 			VecNorm(c, NORM_2,&norm);
 			VecScale(c, 1/norm);
 		
@@ -110,11 +110,27 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
     		KSPSetInitialGuessNonzero(ksp, PETSC_TRUE);
 		}
 
+		Vec tmp;
+		VecDuplicate(x,&tmp);
+		MatMult(*A,x,tmp);
+		VecAXPY(tmp,-1,c);
+		PetscReal nvt;
+		VecNorm(tmp, NORM_2, &nvt);
+		VecScale(x,1/nvt);
+		VecScale(c,1/nvt);
+
 			PetscPrintf(PETSC_COMM_WORLD,"\n\n------------\nStart the %d times Resolution \n-------------\n\n",i);
 			ierr = MyKSPSolve(ksp, c, x,com); CHKERRQ(ierr);
 			end=clock();
   			cost_time = (double)(end - start)/CLOCKS_PER_SEC;
 			KSPGetConvergedReason(ksp,&reason);
+			Vec tmp2;
+                	VecDuplicate(x,&tmp2);
+			MatMult(*A,x,tmp2);
+                	VecAXPY(tmp2,-1,c);
+	                PetscReal nvt2;
+	                VecNorm(tmp2, NORM_2, &nvt2);
+
 			if (reason<0 && !gft_flg) {
 				PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Divergence in acceptable iteration steps.\n", i);
 			}
@@ -126,7 +142,7 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
 			else {
 				KSPGetIterationNumber(ksp,&its);
 		//	mpi_lsa_com_type_send(com,&i);
-				PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Convergence in %f seconds / %d iterations. \n", i, cost_time, its);
+				PetscPrintf(PETSC_COMM_WORLD,"\nResolution %d: Convergence in %f seconds / %d iterations and residual = %.12f\n", i, cost_time, its, nvt2);
 		
 			}
 
