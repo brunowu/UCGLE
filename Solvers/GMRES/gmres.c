@@ -110,14 +110,6 @@ PetscErrorCode launchGMRES(com_lsa * com, Vec * b, Mat * A){
     		KSPSetInitialGuessNonzero(ksp, PETSC_TRUE);
 		}
 
-		Vec tmp;
-		VecDuplicate(x,&tmp);
-		MatMult(*A,x,tmp);
-		VecAXPY(tmp,-1,c);
-		PetscReal nvt;
-		VecNorm(tmp, NORM_2, &nvt);
-		VecScale(x,1/nvt);
-		VecScale(c,1/nvt);
 
 			PetscPrintf(PETSC_COMM_WORLD,"\n\n------------\nStart the %d times Resolution \n-------------\n\n",i);
 			ierr = MyKSPSolve(ksp, c, x,com); CHKERRQ(ierr);

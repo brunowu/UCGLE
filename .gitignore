@@ -23,6 +23,7 @@
 # Executables
 *.exe
 *.out
+*.txt
 *.err
 *.app
 *.i*86
